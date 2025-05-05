@@ -1,18 +1,21 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController as APIAuthController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BorrowingController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
 
 // Authentication routes
-Route::post('/login', [APIAuthController::class, 'login'])->name('login');
-Route::post('/logout', [APIAuthController::class, 'logout'])->name('logout');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     
     // Book routes
     Route::apiResource('books', BookController::class);
