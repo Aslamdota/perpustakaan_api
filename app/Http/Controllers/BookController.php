@@ -14,11 +14,11 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::with('category')->paginate(10);
-        return response()->json([
-            'status' => 'success',
-            'data' => $books
-        ]);
+        // Ambil semua data buku dari database
+        $books = Book::all();
+
+        // Kirim data ke view
+        return view('buku.index', compact('books'));
     }
 
     /**
