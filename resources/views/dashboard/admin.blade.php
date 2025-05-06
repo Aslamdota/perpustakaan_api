@@ -1,8 +1,9 @@
-@extends('layouts.app')
+@extends('main')
 
 @section('content')
-<div class="container">
-    <h1>Selamat Datang Admin</h1>
-    <p>Ini adalah dashboard Admin.</p>
+
+<div class="page-wrapper">
+    <h1>Ini halaman admin</h1>
 </div>
+
 @endsection
