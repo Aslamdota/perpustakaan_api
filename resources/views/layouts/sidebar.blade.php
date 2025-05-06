@@ -27,27 +27,39 @@
        
         <li class="menu-label">Pages</li>
         <li>
-            <a href="widgets.html">
+            <a href="{{ route('view.books') }}">
                 <div class="parent-icon"><i class='bx bx-cookie'></i>
                 </div>
-                <div class="menu-title">Widgets</div>
+                <div class="menu-title">Buku</div>
             </a>
         </li>
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class='bx bx-cart'></i>
                 </div>
-                <div class="menu-title">eCommerce</div>
+                <div class="menu-title">Buku</div>
             </a>
             <ul>
-                <li> <a href="ecommerce-products.html"><i class='bx bx-radio-circle'></i>Products</a>
+                <li> <a href="{{ route('view.books') }}"><i class='bx bx-radio-circle'></i>Tabel Buku</a>
                 </li>
-                <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Product Details</a>
+                <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Edit Buku</a>
                 </li>
-                <li> <a href="ecommerce-add-new-products.html"><i class='bx bx-radio-circle'></i>Add New Products</a>
+                
+            </ul>
+        </li>
+
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class='bx bx-cart'></i>
+                </div>
+                <div class="menu-title">Category</div>
+            </a>
+            <ul>
+                <li> <a href="{{ route('view.category') }}"><i class='bx bx-radio-circle'></i>Tabel Category</a>
                 </li>
-                <li> <a href="ecommerce-orders.html"><i class='bx bx-radio-circle'></i>Orders</a>
+                <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Edit Category</a>
                 </li>
+                
             </ul>
         </li>
 

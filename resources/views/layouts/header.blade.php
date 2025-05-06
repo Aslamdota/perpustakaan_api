@@ -46,8 +46,8 @@
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="assets/images/avatars/avatar-2.png" class="user-img" alt="user avatar">
                     <div class="user-info">
-                        <p class="user-name mb-0">Regi</p>
-                        <p class="designattion mb-0">Web Developer</p>
+                        <p class="user-name mb-0">{{ Auth::user()->name }}</p>
+                        <p class="designattion mb-0">{{ Auth::user()->role }}</p>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -59,12 +59,12 @@
                     </li>
                     
                    
-                    {{-- <form method="post" action="{{ route('logout') }}">
+                    <form method="post" action="{{ route('logout') }}">
                         @csrf
                         <li><button class="dropdown-item d-flex align-items-center" type="submit" href=""><i
                                     class="bx bx-log-out-circle"></i><span>Logout</span></button>
                         </li>
-                    </form> --}}
+                    </form>
                 </ul>
             </div>
         </nav>

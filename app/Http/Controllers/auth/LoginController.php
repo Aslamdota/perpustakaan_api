@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function viewLogin(){
-        return view('auth.login');
+        return view('auth.login', ['title' => 'Login Page']);
     }
 
     public function authenticate(Request $request){
@@ -41,7 +41,15 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
+    public function logout(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Berhasil logout');
+    }
+
     public function viewDashboard(){
-        return view('dashboard.admin');
+        return view('dashboard.admin', ['title' => 'Dashboard Page']);
     }
 }
