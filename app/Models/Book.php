@@ -16,4 +16,8 @@ class Book extends Model
 
         return $this->belongsTo(Category::class);
     }
+
+    public function borrowings(){
+        return $this->belongsTo(Borrowing::class, 'book_id', 'id');
+    }
 }

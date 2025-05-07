@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('members', MemberController::class);
     Route::get('/members/search', [MemberController::class, 'search']);
     
+
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
     Route::put('/borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook']);

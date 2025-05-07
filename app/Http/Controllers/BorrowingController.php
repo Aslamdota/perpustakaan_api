@@ -28,6 +28,7 @@ class BorrowingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // create borrowing
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -52,6 +53,8 @@ class BorrowingController extends Controller
                 'message' => 'Book is not available for borrowing'
             ], 400);
         }
+
+        // $member = auth()->user()->member_id;
 
         // Create new borrowing record
         $borrowing = new Borrowing();

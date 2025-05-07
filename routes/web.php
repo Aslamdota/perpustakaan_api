@@ -5,11 +5,11 @@ use App\Http\Controllers\books\BooksController;
 use App\Http\Controllers\books\CategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/login', [LoginController::class, 'viewLogin'])->name('login');
+Route::get('/', [LoginController::class, 'viewLogin'])->name('login');
 Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
