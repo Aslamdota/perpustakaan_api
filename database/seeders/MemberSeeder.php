@@ -13,11 +13,23 @@ class MemberSeeder extends Seeder
     public function run(): void
     {
         Member::create([
-            'name'       => 'Jane Doe', // Sesuaikan dengan field migrasi
+            'name'       => 'Jane Doe',
+            'member_id'       => 'MB09812',
             'email'      => 'jane@example.com',
-            'telepon'    => '081234567890',
+            'phone'    => '081234567890',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        Member::create([
+            'name'       => 'Jane Smith', // Sesuaikan dengan field migrasi
+            'member_id'       => 'MB0ei',
+            'email'      => 'janesmith@example.com',
+            'phone'    => '084985746',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
     }
 }

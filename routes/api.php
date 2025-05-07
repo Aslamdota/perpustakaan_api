@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Member routes
     Route::apiResource('members', MemberController::class);
     Route::get('/members/search', [MemberController::class, 'search']);
+    Route::get('/myProfile/{id}', [MemberController::class, 'myProfile']);
     
 
     // Borrowing routes
