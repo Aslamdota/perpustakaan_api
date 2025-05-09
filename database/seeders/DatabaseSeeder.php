@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class, // Jalankan CategorySeeder terlebih dahulu
             MemberSeeder::class,
             BookSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }
