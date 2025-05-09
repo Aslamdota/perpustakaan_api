@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< HEAD
         // User::factory(10)->create();
 
         User::factory()->create([
@@ -21,8 +22,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-=======
->>>>>>> 43f8e04b7eed5342d1d278114a152baea46a19a4
         $this->call([
             CategorySeeder::class, // Jalankan CategorySeeder terlebih dahulu
             MemberSeeder::class,

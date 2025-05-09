@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Loan;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +15,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = Borrowing::with(['book', 'member'])->get();
+        $loans = Loan::with(['book', 'member'])->get();
 
         return response()->json([
             'status' => 'success',
@@ -22,14 +23,30 @@ class LoanController extends Controller
         ]);
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'book_id' => 'required|exists:books,id',
+            'member_id' => 'required|exists:members,id',
+            'loan_date' => 'required|date',
+        ]);
+
+        $loan = Loan::create([
+            'book_id' => $request->book_id,
+            'member_id' => $request->member_id,
+            'loan_date' => $request->loan_date,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Loan created successfully',
+            'data' => $loan,
+        ], 201);
+}
+
 
     /**
      * Display the specified resource.

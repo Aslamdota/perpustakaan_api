@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
 
+    Route::middleware('auth:sanctum')->get('/loans', [LoanController::class, 'index']);
+
     Route::post('/loans', [LoanController::class, 'loanBook']);
     Route::post('/loans/{id}', [LoanController::class, 'approveBorrowing']);
     Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
