@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Borrowing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -185,6 +186,28 @@ class BookController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $books
+        ]);
+    }
+
+    public function getRecomendation($memberId){
+        $favorit = Borrowing::where('member_id', $memberId)
+                        ->join('books', 'borrowings.book_id', '=', 'books.id')
+                        ->join('categories', 'books.category_id', '=', 'categories.id')
+                        ->select('categories.id')
+                        ->groupBy('categories.id')
+                        ->orderByRaw('COUNT(categories.id) DESC')
+                        ->limit(3)
+                        ->pluck('categories.id');
+
+        $recommendedBooks = Book::whereIn('category_id', $favorit)
+                        ->whereNotIn('id', Borrowing::where('member_id', $memberId)->pluck('book_id'))
+                        ->orderBy('title', 'asc')
+                        ->limit(5)
+                        ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $recommendedBooks
         ]);
     }
 }
