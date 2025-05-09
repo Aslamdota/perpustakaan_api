@@ -28,12 +28,16 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Member routes
     Route::apiResource('members', MemberController::class);
+
+    
+
     Route::get('/members/search', [MemberController::class, 'search']);
     Route::get('/myProfile/{id}', [MemberController::class, 'myProfile']);
     
 
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
-    Route::put('/borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook']);
+    Route::post('/loans', [BorrowingController::class, 'loanBook']);
+    Route::put('/returns/{borrowing}', [BorrowingController::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });

@@ -28,8 +28,58 @@ class BorrowingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     // create borrowing
-    public function store(Request $request)
+    // public function store(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'book_id' => 'required|exists:books,id',
+    //         'member_id' => 'required|exists:members,id',
+    //         'borrow_date' => 'required|date|date_format:Y-m-d',
+    //         'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:borrow_date',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => $validator->errors()
+    //         ], 422);
+    //     }
+
+    //     // Check if book is available (stock > 0)
+    //     $book = Book::find($request->book_id);
+    //     if ($book->stock <= 0) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Book is not available for borrowing'
+    //         ], 400);
+    //     }
+
+    //     // $member = auth()->user()->member_id;
+
+    //     // Create new borrowing record
+    //     $borrowing = new Borrowing();
+    //     $borrowing->book_id = $request->book_id;
+    //     $borrowing->member_id = $request->member_id;
+    //     $borrowing->borrow_date = $request->borrow_date;
+    //     $borrowing->due_date = $request->due_date;
+    //     $borrowing->status = 'borrowed';
+    //     $borrowing->staff_id = auth()->id(); // Current authenticated user (staff/admin)
+    //     $borrowing->save();
+
+    //     // Decrease book stock
+    //     $book->stock -= 1;
+    //     $book->save();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Book borrowed successfully',
+    //         'data' => $borrowing->load(['book', 'member', 'staff'])
+    //     ], 201);
+    // }
+
+    // create peminjaman
+    public function loanBook(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
@@ -95,6 +145,8 @@ class BorrowingController extends Controller
      */
     public function returnBook(Borrowing $borrowing)
     {
+
+
         if ($borrowing->status === 'returned') {
             return response()->json([
                 'status' => 'error',
