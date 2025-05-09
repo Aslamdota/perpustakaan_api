@@ -14,8 +14,14 @@ class LoanController extends Controller
      */
     public function index()
     {
-        //
+        $loans = Loan::with(['book', 'member'])->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $loans
+        ]);
     }
+
 
     /**
      * Store a newly created resource in storage.

@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Member routes
     Route::apiResource('members', MemberController::class);
+    Route::get('/members', [MemberController::class, 'index']);
 
     
 
@@ -41,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('borrowings', BorrowingController::class);
 
     Route::post('/loans', [LoanController::class, 'loanBook']);
+    Route::get('/loans', [LoanController::class, 'index']);
     Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });
