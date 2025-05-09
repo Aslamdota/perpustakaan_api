@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Category routes
     Route::apiResource('categories', CategoryController::class);
     
-    // Member routes
+    // Member routesss
     Route::apiResource('members', MemberController::class);
 
     
