@@ -9,5 +9,7 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'email', 'alamat', 'telepon']; // Tambahkan kolom yang ingin bisa diisi
+    protected $table = 'members'; // pastikan nama tabel sesuai
+    protected $fillable = ['nama', 'alamat', 'no_hp']; // ganti sesuai kolom
 }
+
