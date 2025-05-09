@@ -56,7 +56,7 @@ class LoanController extends Controller
             'book_id' => 'required|exists:books,id',
             'member_id' => 'required|exists:members,id',
             'borrow_date' => 'required|date|date_format:Y-m-d',
-            'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:borrow_date',
+            // 'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:borrow_date',
         ]);
 
         if ($validator->fails()) {
@@ -82,13 +82,13 @@ class LoanController extends Controller
         $borrowing->book_id = $request->book_id;
         $borrowing->member_id = $request->member_id;
         $borrowing->borrow_date = $request->borrow_date;
-        $borrowing->due_date = $request->due_date;
-        $borrowing->status = 'borrowed';
+        // $borrowing->due_date = $request->due_date;
+        $borrowing->status = 'pending';
         $borrowing->staff_id = auth()->id(); // Current authenticated user (staff/admin)
         $borrowing->save();
 
         // Decrease book stock
-        $book->stock -= 1;
+        // $book->stock -= 1;
         $book->save();
 
         return response()->json([
@@ -97,4 +97,45 @@ class LoanController extends Controller
             'data' => $borrowing->load(['book', 'member', 'staff'])
         ], 201);
     }
+
+    public function approveBorrowing($id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:today',
+            'noted' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $borrowing = Borrowing::find($id);
+        if (!$borrowing || $borrowing->status != 'pending') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid borrowing request or already processed'
+            ], 404);
+        }
+
+        // Approve borrowing
+        $borrowing->status = 'borrowed';
+        $borrowing->due_date = $request->due_date;
+        $borrowing->noted = $request->noted;
+        $borrowing->save();
+
+        // Decrease book stock
+        $book = $borrowing->book;
+        $book->stock -= 1;
+        $book->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Book borrowing borrowed',
+            'data' => $borrowing->load(['book', 'member', 'staff'])
+        ], 200);
+    }
+
 }

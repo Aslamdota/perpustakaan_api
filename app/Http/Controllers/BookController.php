@@ -210,4 +210,14 @@ class BookController extends Controller
             'data' => $recommendedBooks
         ]);
     }
+
+    public function bestSeller(){
+        $bestSeller = Book::withCount('borrowings')
+                    ->orderBy('borrowings_count', 'asc')->limit(5)->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $bestSeller
+        ]);
+    }
 }

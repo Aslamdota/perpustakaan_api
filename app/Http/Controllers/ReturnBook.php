@@ -59,6 +59,7 @@ class ReturnBook extends Controller
         }
 
         $today = Carbon::today();
+        
         $borrowing->return_date = $today;
         
         // Calculate fine if returned late

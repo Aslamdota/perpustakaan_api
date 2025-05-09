@@ -17,5 +17,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/dashboard', [LoginController::class, 'viewDashboard'])->name('dashboard.admin')->middleware('auth');
 
 Route::get('/viewBuku', [BooksController::class, 'viewBooks'])->name('view.books')->middleware('auth');
+
 Route::get('/viewCategory', [CategoryController::class, 'viewCategory'])->name('view.category')->middleware('auth');
+Route::post('/addCategory', [CategoryController::class, 'addCategory'])->name('add.category')->middleware('auth');
 

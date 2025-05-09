@@ -23,7 +23,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('books', BookController::class);
     Route::get('/books/search', [BookController::class, 'search']);
     Route::get('/books/category/{category}', [BookController::class, 'getByCategory']);
+
+    // buku favorite
     Route::get('/recomendation/{memberId}', [BookController::class, 'getRecomendation']);
+    // buku terlaris /populer 
+    Route::get('/bestSeller', [BookController::class, 'bestSeller']);
     
     // Category routes
     Route::apiResource('categories', CategoryController::class);
@@ -41,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('borrowings', BorrowingController::class);
 
     Route::post('/loans', [LoanController::class, 'loanBook']);
+    Route::post('/loans/{id}', [LoanController::class, 'approveBorrowing']);
     Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });
