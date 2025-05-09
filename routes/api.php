@@ -5,6 +5,8 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BorrowingController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\ReturnBook;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -37,7 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
-    Route::post('/loans', [BorrowingController::class, 'loanBook']);
-    Route::put('/returns/{borrowing}', [BorrowingController::class, 'returnBook']);
+
+    Route::post('/loans', [LoanController::class, 'loanBook']);
+    Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });
