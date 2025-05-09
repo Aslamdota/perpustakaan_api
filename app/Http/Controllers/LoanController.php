@@ -14,7 +14,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = Loan::with(['book', 'member'])->get();
+        $loans = Borrowing::with(['book', 'member'])->get();
 
         return response()->json([
             'status' => 'success',
