@@ -27,6 +27,10 @@
 	<link rel="stylesheet" href="{{ asset('assets/css/dark-theme.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('assets/css/semi-dark.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('assets/css/header-colors.css') }}"/>
+
+	<!-- Toastr CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
 	<title>{{ $title }}</title>
 
 	
@@ -160,6 +164,33 @@
 	<script src="{{ asset('assets/js/index.js') }}"></script>
 	<!--app JS-->
 	<script src="{{ asset('assets/js/app.js') }}"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+	<script>
+        @if(Session::has('message'))
+			var type = "{{ Session::get('alert-type', 'info') }}";
+			switch (type) {
+				case 'info':
+					toastr.info("{{ Session::get('message') }}");
+					break;
+					
+				case 'success':
+					toastr.success("{{ Session::get('message') }}");
+					break;
+					
+				case 'warning':
+					toastr.warning("{{ Session::get('message') }}");
+					break;
+					
+				case 'error':
+					toastr.error("{{ Session::get('message') }}");
+					break;
+			}
+		@endif
+
+
+    </script>
+
 	<script>
 		new PerfectScrollbar(".app-container")
 	</script>

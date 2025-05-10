@@ -27,12 +27,13 @@
        
         <li class="menu-label">Pages</li>
         <li>
-            <a href="{{ route('view.books') }}">
+            <a href="{{ route('view.peminjaman') }}">
                 <div class="parent-icon"><i class='bx bx-cookie'></i>
                 </div>
-                <div class="menu-title">Buku</div>
+                <div class="menu-title">Peminjaman</div>
             </a>
         </li>
+
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class='bx bx-cart'></i>

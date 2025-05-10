@@ -48,6 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/loans', [LoanController::class, 'loanBook']);
     Route::post('/loans/{id}', [LoanController::class, 'approveBorrowing']);
+    Route::post('/loans/rejected/{id}', [LoanController::class, 'rejectedBorrowing']);
+
+    Route::get('/getBorrowing', [LoanController::class, 'getBorrowing']);
+
     Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });

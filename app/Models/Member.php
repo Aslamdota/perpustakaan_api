@@ -10,6 +10,8 @@ class Member extends Model
     use HasFactory;
 
     protected $table = 'members'; // pastikan nama tabel sesuai
-    protected $fillable = ['nama', 'alamat', 'no_hp']; // ganti sesuai kolom
+    // protected $fillable = ['nama', 'alamat', 'no_hp']; // ganti sesuai kolom
+    protected $guarded = [];
+
 }
 

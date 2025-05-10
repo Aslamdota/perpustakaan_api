@@ -72,6 +72,15 @@ class LoanController extends Controller
         //
     }
 
+    public function getBorrowing(){
+        $borrowing = Borrowing::where('status', 'pending')->with(['book', 'member', 'staff']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $borrowing
+        ]);
+    }
+
 
     public function loanBook(Request $request)
     {
@@ -125,7 +134,7 @@ class LoanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:today',
-            'noted' => 'required'
+            // 'noted' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -146,7 +155,7 @@ class LoanController extends Controller
         // Approve borrowing
         $borrowing->status = 'borrowed';
         $borrowing->due_date = $request->due_date;
-        $borrowing->noted = $request->noted;
+        // $borrowing->noted = $request->noted;
         $borrowing->save();
 
         // Decrease book stock
@@ -159,6 +168,39 @@ class LoanController extends Controller
             'message' => 'Book borrowing borrowed',
             'data' => $borrowing->load(['book', 'member', 'staff'])
         ], 200);
+    }
+
+    public function rejectedBorrowing($id, Request $request){
+        $validator = Validator::make($request->all(), [
+            'noted' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'errors',
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $borrowing = Borrowing::find($id);
+        if (!$borrowing || $borrowing->status != 'pending') {
+            return response()->json([
+                'status' => 'errors',
+                'message' => 'Invalid borrowing reqeust already processed'
+            ], 404);
+        }
+
+        // reject borrowing
+        $borrowing->status = 'rejected';
+        $borrowing->noted = $request->noted;
+        $borrowing->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Book borrowing rejected',
+            'data' => $borrowing->load(['book', 'member', 'staff'])
+        ], 200);
+
     }
 
 }
