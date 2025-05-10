@@ -8,18 +8,23 @@ class Borrowing extends Model
 {
     protected $guarded = [];
 
-    
+    protected $dates = ['borrow_date', 'due_date', 'return_date'];
+
+    // Relasi ke buku
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
+
+    // Relasi ke anggota
     public function member()
     {
-        return $this->belongsTo(Member::class, 'member_id');
+        return $this->belongsTo(Member::class);
     }
 
-    public function book(){
-        return $this->belongsTo(Book::class, 'book_id');
-    }
-
-    public function staff(){
+    // Relasi ke petugas/staff (User)
+    public function staff()
+    {
         return $this->belongsTo(User::class, 'staff_id');
     }
-
 }

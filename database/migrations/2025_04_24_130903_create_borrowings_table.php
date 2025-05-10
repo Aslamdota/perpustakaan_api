@@ -4,34 +4,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateBorrowingsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('borrowings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
-            $table->foreignId('member_id')->constrained('members')->onDelete('cascade');
-            $table->foreignId('staff_id')->constrained('users')->onDelete('cascade');
-
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->foreignId('member_id')->constrained()->onDelete('cascade');
+            $table->foreignId('staff_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('borrow_date');
-            $table->date('due_date');
+            $table->date('due_date')->nullable();
             $table->date('return_date')->nullable();
-            $table->enum('status', ['borrowed', 'returned', 'overdue'])->default('borrowed');
-            $table->decimal('fine', 10, 2)->default(0);
-
+            $table->enum('status', ['pending', 'borrowed', 'returned', 'rejected'])->default('pending');
+            $table->text('noted')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('borrowings');
     }
-};
+}
