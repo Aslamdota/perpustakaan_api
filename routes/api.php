@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Book routes
     Route::apiResource('books', BookController::class);
+    Route::get('/books/latest', [BookController::class, 'latestBooks']);
     Route::get('/books/search', [BookController::class, 'search']);
     Route::get('/books/category/{category}', [BookController::class, 'getByCategory']);
 

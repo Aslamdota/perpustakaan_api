@@ -220,4 +220,12 @@ class BookController extends Controller
             'data' => $bestSeller
         ]);
     }
+
+    public function latestBooks()
+    {
+        // Ambil 4 buku terbaru berdasarkan created_at
+        $books = Book::orderBy('created_at', 'desc')->take(4)->get();
+
+        return response()->json($books);
+    }
 }
