@@ -18,6 +18,11 @@ Route::post('/register', [AuthController::class, 'register']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // user
+    Route::put('/update/profile', [AuthController::class, 'UpdateProfil']);
+    Route::put('/update/password', [AuthController::class, 'UpdatePassword']);
+    Route::get('/profil/user', [AuthController::class, 'ProfilUser']);
     
     // Book routes
     Route::apiResource('books', BookController::class);
@@ -36,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('members', MemberController::class);
 
     
-
+    // member
     Route::get('/members/search', [MemberController::class, 'search']);
     Route::get('/myProfile/{id}', [MemberController::class, 'myProfile']);
     
@@ -46,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('auth:sanctum')->get('/loans', [LoanController::class, 'index']);
 
-    Route::post('/loans', [LoanController::class, 'loanBook']);
+    Route::post('/loansBook', [LoanController::class, 'loanBook']);
     Route::post('/loans/{id}', [LoanController::class, 'approveBorrowing']);
     Route::post('/loans/rejected/{id}', [LoanController::class, 'rejectedBorrowing']);
 
