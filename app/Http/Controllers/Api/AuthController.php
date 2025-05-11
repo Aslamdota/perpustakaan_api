@@ -1,54 +1,42 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Member;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    /**
-     * Menampilkan form login (untuk aplikasi berbasis web).
-     */
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
 
-    /**
-     * Proses login pengguna.
-     */
     public function login(Request $request)
     {
-        // Validasi input
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Cek kredensial
-        if (!Auth::attempt($credentials)) {
+        $member = Member::where('email', $request->email)->first();
+
+        if (!$member || !Hash::check($request->password, $member->password)) {
             return response()->json([
-                'message' => 'Invalid credentials',
+                'status' => 'error',
+                'message' => 'Invalid login credentials',
             ], 401);
         }
 
-        // Ambil pengguna yang sedang login
-        $user = Auth::user();
-
-        // Buat token untuk autentikasi API
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Buat token (jika Member pakai Laravel Sanctum)
+        $token = $member->createToken('auth_token')->plainTextToken;
 
         return response()->json([
+            'status' => 'success',
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user, // Opsional: Kirim data pengguna
+            'user' => $member,
         ]);
     }
+
 
     /**
      * Proses logout pengguna.

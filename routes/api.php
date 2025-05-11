@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
@@ -23,28 +23,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update/profile', [AuthController::class, 'UpdateProfil']);
     Route::put('/update/password', [AuthController::class, 'UpdatePassword']);
     Route::get('/profil/user', [AuthController::class, 'ProfilUser']);
-    
+
     // Book routes
     Route::apiResource('books', BookController::class);
     Route::get('/books/search', [BookController::class, 'search']);
+    Route::get('/books/latest', [BookController::class, 'latest']);
     Route::get('/books/category/{category}', [BookController::class, 'getByCategory']);
 
     // buku favorite
     Route::get('/recomendation/{memberId}', [BookController::class, 'getRecomendation']);
-    // buku terlaris /populer 
+    // buku terlaris /populer
     Route::get('/bestSeller', [BookController::class, 'bestSeller']);
-    
+
     // Category routes
     Route::apiResource('categories', CategoryController::class);
-    
+
     // Member routesss
     Route::apiResource('members', MemberController::class);
 
-    
+
     // member
     Route::get('/members/search', [MemberController::class, 'search']);
     Route::get('/myProfile/{id}', [MemberController::class, 'myProfile']);
-    
+
 
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);

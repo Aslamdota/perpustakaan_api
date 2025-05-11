@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
 class Member extends Model
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'members'; // pastikan nama tabel sesuai
-    // protected $fillable = ['nama', 'alamat', 'no_hp']; // ganti sesuai kolom
+    protected $table = 'members';
     protected $guarded = [];
-
 }
+
+
 
