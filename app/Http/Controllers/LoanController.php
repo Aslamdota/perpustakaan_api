@@ -15,12 +15,14 @@ class LoanController extends Controller
      */
     public function index()
     {
+        // Ambil data loans dengan relasi book dan member
         $loans = Loan::with(['book', 'member'])->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $loans
-        ]);
+        // Debugging
+        dd($loans);
+
+        // Kirim data ke view
+        return view('peminjaman.index', compact('loans'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -51,24 +53,32 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'book_id' => 'required|exists:books,id',
-            'member_id' => 'required|exists:members,id',
-            'loan_date' => 'required|date',
-        ]);
-
         $loan = Loan::create([
             'book_id' => $request->book_id,
-            'member_id' => $request->member_id,
-            'loan_date' => $request->loan_date,
+            'user_id' => auth()->id(),
+            'status' => 'Pending',
         ]);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Loan created successfully',
-            'data' => $loan,
+            'success' => true,
+            'message' => 'Loan request created',
+            'loan' => $loan
         ], 201);
     }
+
+    public function update(Request $request, $id)
+    {
+        $loan = Loan::findOrFail($id);
+        $loan->status = $request->status; // 'Approved' atau 'Rejected'
+        $loan->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Loan updated',
+            'loan' => $loan
+        ]);
+    }
+
 
     public function loanBook(Request $request)
     {

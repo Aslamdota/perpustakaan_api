@@ -19,6 +19,7 @@ Route::get('/dashboard', [LoginController::class, 'viewDashboard'])->name('dashb
 
 Route::get('/viewBuku', [BooksController::class, 'viewBooks'])->name('view.books')->middleware('auth');
 
+Route::get('/peminjaman', [LoanController::class, 'index'])->name('loans.index');
 Route::get('/viewPeminjaman', [PeminjamanController::class, 'viewPeminjaman'])->name('view.peminjaman')->middleware('auth');
 Route::post('/borrowings/{id}/confirm', [PeminjamanController::class, 'confirm'])->name('borrowings.confirm')->middleware('auth');
 Route::post('/borrowings/{id}/reject', [PeminjamanController::class, 'reject'])->name('borrowings.reject')->middleware('auth');
