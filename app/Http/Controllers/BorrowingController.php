@@ -199,4 +199,15 @@ class BorrowingController extends Controller
             'data' => $overdue
         ]);
     }
+
+    public function getBorrowing() {
+        $borrowing = Borrowing::where('status', 'pending')
+            ->with(['book', 'member', 'staff'])
+            ->get(); // <- tambahkan ini
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => $borrowing
+        ]);
+    }
 }

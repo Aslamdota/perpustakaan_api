@@ -23,6 +23,29 @@ class LoanController extends Controller
         ]);
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $loan = Loan::findOrFail($id);
+        $validated = $request->validate([
+            'status' => 'required|in:Pending,Approved',
+        ]);
+
+        $loan->status = $validated['status'];
+        $loan->save();
+
+        return response()->json(['success' => true, 'data' => $loan]);
+    }
+
+    public function getBorrowing()
+    {
+        $borrowing = Borrowing::where('status', 'pending')->with(['book', 'member', 'staff'])->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $borrowing
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -45,42 +68,7 @@ class LoanController extends Controller
             'message' => 'Loan created successfully',
             'data' => $loan,
         ], 201);
-}
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function getBorrowing(){
-        $borrowing = Borrowing::where('status', 'pending')->with(['book', 'member', 'staff']);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $borrowing
-        ]);
-    }
-
 
     public function loanBook(Request $request)
     {
@@ -88,7 +76,6 @@ class LoanController extends Controller
             'book_id' => 'required|exists:books,id',
             'member_id' => 'required|exists:members,id',
             'borrow_date' => 'required|date|date_format:Y-m-d',
-            // 'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:borrow_date',
         ]);
 
         if ($validator->fails()) {
@@ -98,7 +85,6 @@ class LoanController extends Controller
             ], 422);
         }
 
-        // Check if book is available (stock > 0)
         $book = Book::find($request->book_id);
         if ($book->stock <= 0) {
             return response()->json([
@@ -107,25 +93,17 @@ class LoanController extends Controller
             ], 400);
         }
 
-        // $member = auth()->user()->member_id;
-
-        // Create new borrowing record
         $borrowing = new Borrowing();
         $borrowing->book_id = $request->book_id;
         $borrowing->member_id = $request->member_id;
         $borrowing->borrow_date = $request->borrow_date;
-        // $borrowing->due_date = $request->due_date;
         $borrowing->status = 'pending';
-        $borrowing->staff_id = auth()->id(); // Current authenticated user (staff/admin)
+        $borrowing->staff_id = auth()->id();
         $borrowing->save();
-
-        // Decrease book stock
-        // $book->stock -= 1;
-        $book->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Book borrowed successfully',
+            'message' => 'Book borrowing request created',
             'data' => $borrowing->load(['book', 'member', 'staff'])
         ], 201);
     }
@@ -134,7 +112,6 @@ class LoanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:today',
-            // 'noted' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -152,32 +129,30 @@ class LoanController extends Controller
             ], 404);
         }
 
-        // Approve borrowing
         $borrowing->status = 'borrowed';
         $borrowing->due_date = $request->due_date;
-        // $borrowing->noted = $request->noted;
         $borrowing->save();
 
-        // Decrease book stock
         $book = $borrowing->book;
         $book->stock -= 1;
         $book->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Book borrowing borrowed',
+            'message' => 'Book borrowing approved',
             'data' => $borrowing->load(['book', 'member', 'staff'])
         ], 200);
     }
 
-    public function rejectedBorrowing($id, Request $request){
+    public function rejectedBorrowing($id, Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'noted' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'errors',
+                'status' => 'error',
                 'message' => $validator->errors()
             ], 422);
         }
@@ -185,12 +160,11 @@ class LoanController extends Controller
         $borrowing = Borrowing::find($id);
         if (!$borrowing || $borrowing->status != 'pending') {
             return response()->json([
-                'status' => 'errors',
-                'message' => 'Invalid borrowing reqeust already processed'
+                'status' => 'error',
+                'message' => 'Invalid borrowing request or already processed'
             ], 404);
         }
 
-        // reject borrowing
         $borrowing->status = 'rejected';
         $borrowing->noted = $request->noted;
         $borrowing->save();
@@ -200,7 +174,5 @@ class LoanController extends Controller
             'message' => 'Book borrowing rejected',
             'data' => $borrowing->load(['book', 'member', 'staff'])
         ], 200);
-
     }
-
 }
