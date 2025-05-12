@@ -87,7 +87,7 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-  public function update(Request $request, Member $member)
+    public function update(Request $request, Member $member)
     {
         $validasi = Validator::make($request->all(), [
             'name' => 'required|string|max:15',
@@ -105,27 +105,29 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $member->name = $request->input('name', $member->name);
-        $member->member_id = $request->input('member_id', $member->member_id);
-        $member->email = $request->input('email', $member->email);
-        $member->phone = $request->input('phone', $member->phone);
-        $member->address = $request->input('address', $member->address);
+        $member->update([
+            'name' => $request->name,
+            'member_id' => $request->input('member_id', $member->member_id),
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
 
         if ($request->filled('password')) {
             $member->password = bcrypt($request->password);
+            $member->save(); 
         }
 
         if ($request->hasFile('avatar')) {
-            if ($member->avatar !== 'avatar.jpg') {
+            if ($member->avatar && $member->avatar !== 'avatar.jpg') {
                 Storage::delete('avatars/' . $member->avatar);
             }
 
-            $avatarName = time(). '.' . $request->file('avatar')->getClientOriginalExtension();
+            $avatarName = time() . '.' . $request->file('avatar')->getClientOriginalExtension();
             $request->file('avatar')->storeAs('avatars', $avatarName);
             $member->avatar = $avatarName;
+            $member->save();
         }
-
-        $member->save();
 
         return response()->json([
             'status' => 'success',
@@ -133,7 +135,6 @@ class MemberController extends Controller
             'data' => $member
         ]);
     }
-
 
     /**
      * Remove the specified resource from storage.
