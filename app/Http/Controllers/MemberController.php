@@ -91,7 +91,7 @@ class MemberController extends Controller
     {
         $validasi = Validator::make($request->all(), [
             'name' => 'required|string|max:15',
-            'member_id' => 'sometimes|required|string',
+            // 'member_id' => 'sometimes|required|string',
             'email' => 'required|email|unique:members,email,' . $member->id,
             'phone' => 'required',
             'address' => 'required|string|max:255',
@@ -107,7 +107,7 @@ class MemberController extends Controller
 
         $member->update([
             'name' => $request->name,
-            'member_id' => $request->input('member_id', $member->member_id),
+            'member_id' => $member->member_id,
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
