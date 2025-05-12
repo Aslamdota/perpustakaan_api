@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Loan;
+use Illuminate\Support\Facades\Validator;
 
 class PeminjamanController extends Controller
 {
@@ -33,37 +34,69 @@ class PeminjamanController extends Controller
         return view('peminjaman.index', ['title' => 'viewPeminjaman']);
     }
 
-    public function confirm(Request $request, $id)
+     public function approveBorrowing($id, Request $request)
     {
-        $borrowing = Borrowing::findOrFail($id);
-        $borrowing->due_date = $request->due_date;
-        $borrowing->noted = $request->noted;
-        $borrowing->status = 'borrowed';
-        $borrowing->save();
+        $validator = Validator::make($request->all(), [
+            // 'due_date' => 'required|date|date_format:Y-m-d|after_or_equal:today',
+        ]);
 
-        // Kurangi stok buku
-        $borrowing->book->decrement('stock', 1);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 422);
+        }
 
-        $notification = array(
-                'message' => 'Peminjaman Berhasil dikonfirmasi',
-                'alert-type' => 'success'
-            );
+        $loan = Loan::find($id);
+        if (!$loan || $loan->status != 'pending') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid loan request or already processed'
+            ], 404);
+        }
 
-        return redirect()->back()->with($notification);
+        $loan->status = 'borrowed';
+        $loan->save();
+
+        $book = $loan->book;
+        $book->stock -= 1;
+        $book->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Book loan approved',
+            'data' => $loan->load(['book', 'member', 'staff'])
+        ], 200);
     }
 
-    public function reject(Request $request, $id)
+    public function rejectedBorrowing($id, Request $request)
     {
-        $borrowing = Borrowing::findOrFail($id);
-        $borrowing->noted = $request->noted;
-        $borrowing->status = 'rejected';
-        $borrowing->save();
+        $validator = Validator::make($request->all(), [
+            'noted' => 'required'
+        ]);
 
-         $notification = array(
-                'message' => 'Peminjaman Berhasil ditolak',
-                'alert-type' => 'error'
-            );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 422);
+        }
 
-        return redirect()->back()->with($notification);
+        $loan = Loan::find($id);
+        if (!$loan || $loan->status != 'pending') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid loan request or already processed'
+            ], 404);
+        }
+
+        $loan->status = 'rejected';
+        $loan->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Book loan rejected',
+            'data' => $loan->load(['book', 'member', 'staff'])
+        ], 200);
     }
 }

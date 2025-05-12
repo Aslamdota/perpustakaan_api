@@ -61,11 +61,6 @@
             <div class="modal-body">
                 <form id="confirmForm" method="POST">
                     @csrf
-                    <div class="col-md-6">
-                        <label for="due_date" class="form-label">Tanggal Dikembalikan</label>
-                        <input type="date" class="form-control" id="due_date" name="due_date" required>
-                        <div class="invalid-feedback">Masukkan tanggal pengembalian.</div>
-                    </div>
                     <div class="col-md-12">
                         <label for="noted" class="form-label">Catatan</label>
                         <textarea class="form-control" id="noted" name="noted" placeholder="Catatan ..." rows="3"></textarea>
