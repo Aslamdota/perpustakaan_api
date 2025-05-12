@@ -9,11 +9,7 @@ class Loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'book_id',
-        'member_id',
-        'status',
-    ];
+    protected $guarded = [];
 
     public function book()
     {
@@ -23,5 +19,11 @@ class Loan extends Model
     public function member()
     {
         return $this->belongsTo(Member::class);
+    }
+
+    // Relasi ke petugas/staff (User)
+    public function staff()
+    {
+        return $this->belongsTo(User::class, 'staff_id');
     }
 }

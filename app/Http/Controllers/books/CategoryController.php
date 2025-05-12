@@ -24,6 +24,11 @@ class CategoryController extends Controller
            'code' => $request->code,
         ]);
 
-        return redirect()->route('view.category');
+        $notification = array(
+                'message' => 'Kategori Berhasil ditambah',
+                'alert-type' => 'success'
+            );
+
+        return redirect()->route('view.category')->with($notification);
     }
 }

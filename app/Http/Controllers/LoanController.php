@@ -19,10 +19,10 @@ class LoanController extends Controller
         $loans = Loan::with(['book', 'member'])->get();
 
         // Debugging
-        dd($loans);
+        // dd($loans);
 
         // Kirim data ke view
-        return view('peminjaman.index', compact('loans'));
+        return view('peminjaman.index', ['title' => 'Peminjaman'], compact('loans'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -85,7 +85,7 @@ class LoanController extends Controller
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
             'member_id' => 'required|exists:members,id',
-            'borrow_date' => 'required|date|date_format:Y-m-d',
+            'loan_date' => 'required|date|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
@@ -103,18 +103,18 @@ class LoanController extends Controller
             ], 400);
         }
 
-        $borrowing = new Borrowing();
-        $borrowing->book_id = $request->book_id;
-        $borrowing->member_id = $request->member_id;
-        $borrowing->borrow_date = $request->borrow_date;
-        $borrowing->status = 'pending';
-        $borrowing->staff_id = auth()->id();
-        $borrowing->save();
+        $loan = new Loan();
+        $loan->book_id = $request->book_id;
+        $loan->member_id = $request->member_id;
+        $loan->loan_date = $request->loan_date;
+        $loan->status = 'pending';
+        $loan->staff_id = auth()->id();
+        $loan->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Book borrowing request created',
-            'data' => $borrowing->load(['book', 'member', 'staff'])
+            'message' => 'Book loan request created',
+            'data' => $loan->load(['book', 'member', 'staff'])
         ], 201);
     }
 
@@ -131,26 +131,26 @@ class LoanController extends Controller
             ], 422);
         }
 
-        $borrowing = Borrowing::find($id);
-        if (!$borrowing || $borrowing->status != 'pending') {
+        $loan = Loan::find($id);
+        if (!$loan || $loan->status != 'pending') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid borrowing request or already processed'
+                'message' => 'Invalid loan request or already processed'
             ], 404);
         }
 
-        $borrowing->status = 'borrowed';
-        $borrowing->due_date = $request->due_date;
-        $borrowing->save();
+        $loan->status = 'borrowed';
+        $loan->due_date = $request->due_date;
+        $loan->save();
 
-        $book = $borrowing->book;
+        $book = $loan->book;
         $book->stock -= 1;
         $book->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Book borrowing approved',
-            'data' => $borrowing->load(['book', 'member', 'staff'])
+            'message' => 'Book loan approved',
+            'data' => $loan->load(['book', 'member', 'staff'])
         ], 200);
     }
 
@@ -167,22 +167,22 @@ class LoanController extends Controller
             ], 422);
         }
 
-        $borrowing = Borrowing::find($id);
-        if (!$borrowing || $borrowing->status != 'pending') {
+        $loan = Loan::find($id);
+        if (!$loan || $loan->status != 'pending') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid borrowing request or already processed'
+                'message' => 'Invalid loan request or already processed'
             ], 404);
         }
 
-        $borrowing->status = 'rejected';
-        $borrowing->noted = $request->noted;
-        $borrowing->save();
+        $loan->status = 'rejected';
+        $loan->noted = $request->noted;
+        $loan->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Book borrowing rejected',
-            'data' => $borrowing->load(['book', 'member', 'staff'])
+            'message' => 'Book loan rejected',
+            'data' => $loan->load(['book', 'member', 'staff'])
         ], 200);
     }
 }

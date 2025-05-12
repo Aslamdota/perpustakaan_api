@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Borrowing;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -49,9 +50,9 @@ class ReturnBook extends Controller
         //
     }
 
-    public function returnBook(Borrowing $borrowing)
+    public function returnBook(Loan $loan)
     {
-        if ($borrowing->status === 'returned') {
+        if ($loan->status === 'returned') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'This book has already been returned'
@@ -60,29 +61,29 @@ class ReturnBook extends Controller
 
         $today = Carbon::today();
         
-        $borrowing->return_date = $today;
+        $loan->return_date = $today;
         
         // Calculate fine if returned late
-        if ($today->isAfter($borrowing->due_date)) {
-            $daysLate = $today->diffInDays($borrowing->due_date);
+        if ($today->isAfter($loan->due_date)) {
+            $daysLate = $today->diffInDays($loan->due_date);
             $finePerDay = 1000; // Rp 1.000 per day
-            $borrowing->fine = $daysLate * $finePerDay;
-            $borrowing->status = 'overdue';
+            $loan->fine = $daysLate * $finePerDay;
+            $loan->status = 'overdue';
         } else {
-            $borrowing->status = 'returned';
+            $loan->status = 'returned';
         }
         
-        $borrowing->save();
+        $loan->save();
 
         // Increase book stock
-        $book = Book::find($borrowing->book_id);
+        $book = Book::find($loan->book_id);
         $book->stock += 1;
         $book->save();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Book returned successfully',
-            'data' => $borrowing->load(['book', 'member', 'staff'])
+            'data' => $loan->load(['book', 'member', 'staff'])
         ]);
     }
 }

@@ -7,10 +7,19 @@
     }
 </style>
 
+<style>
+    .upload-card { width: 100%; padding: 20px; border: 2px dashed #ccc; border-radius: 16px; background-color: #fff; text-align: center; margin-bottom: 20px; position: relative; }
+    .upload-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 16px; margin-bottom: 10px; }
+    .upload-label { display: block; padding: 10px 20px; background-color: #007bff; color: #fff; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: 600; transition: background-color 0.3s; }
+    .upload-label:hover { background-color: #0056b3; }
+    .remove-button { position: absolute; top: 10px; right: 10px; background-color: #e53e3e; color: #fff; width: 30px; height: 30px; border: none; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 18px; line-height: 30px; text-align: center; padding: 0; transition: background-color 0.3s; }
+    .remove-button:hover { background-color: #c53030; }
+    input[type='file'] { display: none; }
+</style>
+
 <div class="page-wrapper">
     <div class="page-content">
 
-        <!-- Modal -->
         <!-- Modal -->
         <div class="modal fade modal-center" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -20,115 +29,61 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="row g-3 needs-validation" novalidate="">
+                        <form class="row g-3 needs-validation" novalidate="" action="{{ route('store.books') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="col-md-12">
+                                <label for="fancy-file-upload" class="form-label">Image</label>
+                                <div class="upload-card" id="upload-card">
+                                    <div id="image-preview" style="display: none;"></div>
+                                    <label for="fancy-file-upload" class="upload-label">Choose Image</label>
+                                    <input id="fancy-file-upload" type="file" name="cover_image" accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
+                                    <button id="remove-button" class="remove-button" style="display: none;" type="button" onclick="removeImage()">&times;</button>
+                                </div>
+                            </div>
                             <div class="col-md-6">
-                                <label for="bsValidation1" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="bsValidation1" placeholder="First Name" value="Jhon" required="">
-                                <div class="valid-feedback">
-                                    Looks good!
-                                  </div>
+                                <label for="bsValidation1" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="bsValidation1" placeholder="Title" required name="title">
+                                <div class="valid-feedback">Looks good!</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="bsValidation2" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="bsValidation2" placeholder="Last Name" value="Deo" required="">
-                                <div class="valid-feedback">
-                                    Looks good!
-                                  </div>
+                                <label for="bsValidation2" class="form-label">Author</label>
+                                <input type="text" class="form-control" id="bsValidation2" placeholder="Author Books" name="author" required>
+                                <div class="valid-feedback">Looks good!</div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation3" class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="bsValidation3" placeholder="Phone" required="">
-                                <div class="invalid-feedback">
-                                    Please choose a username.
-                                  </div>
+                            <div class="col-md-6">
+                                <label for="bsValidation3" class="form-label">Publisher</label>
+                                <input type="text" class="form-control" id="bsValidation3" placeholder="publisher" name="publisher" required>
+                                <div class="invalid-feedback">Please choose a username.</div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation4" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="bsValidation4" placeholder="Email" required="">
-                                <div class="invalid-feedback">
-                                    Please provide a valid email.
-                                  </div>
+                            <div class="col-md-6">
+                                <label for="bsValidation4" class="form-label">Isbn</label>
+                                <input type="text" class="form-control" id="bsValidation4" placeholder="isbn" name="isbn" required>
+                                <div class="invalid-feedback">Please provide a valid email.</div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation5" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="bsValidation5" placeholder="Password" required="">
-                                <div class="invalid-feedback">
-                                    Please choose a password.
-                                </div>
+                            <div class="col-md-6">
+                                <label for="year" class="form-label">Year</label>
+                                <input type="number" class="form-control" id="year" placeholder="Year" name="publication_year" required>
+                                <div class="invalid-feedback">Please provide a valid year.</div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="bsValidation6" name="radio-stacked" required="">
-                                        <label class="form-check-label" for="bsValidation6">Male</label>
-                                      </div>
-                                      <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="bsValidation7" name="radio-stacked" required="">
-                                        <label class="form-check-label" for="bsValidation7">Female</label>
-                                      </div>
-                                </div>
+                            <div class="col-md-6">
+                                <label for="stock" class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="stock" placeholder="stock" name="stock" required>
+                                <div class="invalid-feedback">Please provide a valid stock number.</div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation8" class="form-label">DOB</label>
-                                <input type="date" class="form-control" id="bsValidation8" placeholder="Date of Birth" required="">
-                                <div class="invalid-feedback">
-                                    Please select date.
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation9" class="form-label">Country</label>
-                                <select id="bsValidation9" class="form-select" required="">
-                                    <option selected="" disabled="" value="">...</option>
-                                    <option>One</option>
-                                    <option>Two</option>
-                                    <option>Three</option>
+                            <div class="col-md-6">
+                                <label for="bsValidation9" class="form-label">Kategori</label>
+                                <select id="bsValidation9" name="category_id" class="form-select" required>
+                                    <option selected disabled value="">Pilih Kategory</option>
+                                    @foreach ($books as $item)
+                                        <option value="{{ $item->category_id }}">{{ $item->category->name }}</option>
+                                    @endforeach
                                 </select>
-                                <div class="invalid-feedback">
-                                   Please select a valid country.
-                                </div>
+                                <div class="invalid-feedback">Please select a valid category.</div>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label for="bsValidation10" class="form-label">City</label>
-                                <input type="text" class="form-control" id="bsValidation10" placeholder="City" required="">
-                                <div class="invalid-feedback">
-                                    Please provide a valid city.
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="bsValidation11" class="form-label">State</label>
-                                <select id="bsValidation11" class="form-select" required="">
-                                    <option selected="" disabled="" value="">Choose...</option>
-                                    <option>One</option>
-                                    <option>Two</option>
-                                    <option>Three</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a valid State.
-                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="bsValidation12" class="form-label">Zip</label>
-                                <input type="text" class="form-control" id="bsValidation12" placeholder="Zip" required="">
-                                <div class="invalid-feedback">
-                                    Please enter a valid Zip code.
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="bsValidation13" class="form-label">Address</label>
-                                <textarea class="form-control" id="bsValidation13" placeholder="Address ..." rows="3" required=""></textarea>
-                                <div class="invalid-feedback">
-                                    Please enter a valid address.
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="bsValidation14" required="">
-                                    <label class="form-check-label" for="bsValidation14">Agree to terms and conditions</label>
-                                    <div class="invalid-feedback">
-                                        You must agree before submitting.
-                                      </div>
-                                </div>
+                                <label for="bsValidation13" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="bsValidation13" placeholder="Deskripsi ..." name="description" rows="3" required></textarea>
+                                <div class="invalid-feedback">Please enter a valid description.</div>
                             </div>
                             <div class="col-md-12">
                                 <div class="d-md-flex d-grid align-items-center gap-3">
@@ -137,6 +92,8 @@
                                 </div>
                             </div>
                         </form>
+
+
                     </div>
                 </div>
             </div>
@@ -172,27 +129,35 @@
               <table class="table align-middle mb-0">
                <thead class="table-light">
                 <tr>
-                  <th>Product</th>
-                  <th>Photo</th>
-                  <th>Product ID</th>
-                  <th>Status</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Shipping</th>
+                  <th>No</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Publisher</th>
+                  <th>Isbn</th>
+                  <th>Year</th>
+                  <th>Stok</th>
+                  <th>Deskripsi</th>
+                  <th>Kategori</th>
+                  <th>Image</th>
+                  <th>Aksi</th>
                 </tr>
                 </thead>
-                <tbody><tr>
-                 <td>Iphone 5</td>
+                <tbody>
+                @foreach ($books as $key => $item)    
+                <tr>
+                 <td>{{ $key +1 }}</td>
+                 <td>{{ $item->title }}</td>
+                 <td>{{ $item->author }}</td>
+                 <td>{{ $item->publisher }}</td>
+                 <td>{{ $item->isbn }}</td>
+                 <td>{{ $item->publication_year }}</td>
+                 <td>{{ $item->stock }}</td>
+                 <td>{{ $item->description }}</td>
+                 <td>{{ $item->category->name }}</td>
                  <td><img src="assets/images/products/01.png" class="product-img-2" alt="product img"></td>
-                 <td>#9405822</td>
-                 <td><span class="badge bg-gradient-quepal text-white shadow-sm w-100">Paid</span></td>
-                 <td>$1250.00</td>
-                 <td>03 Feb 2020</td>
-                 <td><div class="progress" style="height: 6px;">
-                       <div class="progress-bar bg-gradient-quepal" role="progressbar" style="width: 100%"></div>
-                     </div></td>
+                 <td>aksi</td>
                 </tr>
-
+                @endforeach
                 
 
                 
@@ -206,5 +171,26 @@
             </div>
         </div>
 
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const preview = document.getElementById('image-preview');
+                preview.innerHTML = `<img src="${reader.result}" alt="Preview">`;
+                preview.style.display = 'block';
+                document.getElementById('remove-button').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 
+    function removeImage() {
+        document.getElementById('image-preview').style.display = 'none';
+        document.getElementById('image-preview').innerHTML = '';
+        document.getElementById('fancy-file-upload').value = '';
+        document.getElementById('remove-button').style.display = 'none';
+    }
+</script>
 @endsection

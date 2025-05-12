@@ -20,8 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // user
-    Route::put('/update/profile', [AuthController::class, 'UpdateProfil']);
-    Route::put('/update/password', [AuthController::class, 'UpdatePassword']);
+    Route::put('/update/profile/{id}', [MemberController::class, 'UpdateProfil']);
+    Route::put('/update/password/{id}', [MemberController::class, 'UpdatePassword']);
     Route::get('/profil/user', [AuthController::class, 'ProfilUser']);
 
     // Book routes
@@ -58,6 +58,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/getBorrowing', [LoanController::class, 'getBorrowing']);
 
-    Route::put('/returns/{borrowing}', [ReturnBook::class, 'returnBook']);
+    Route::put('/returns/{loan}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
 });
