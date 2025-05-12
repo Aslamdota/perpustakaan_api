@@ -103,10 +103,22 @@ class LoanController extends Controller
             ], 400);
         }
 
+        $activeLoan = Loan::where('member_id', $request->member_id)
+                            ->whereIn('status', ['pending', 'borrowed'])
+                            ->exists();
+        
+        if ($activeLoan) {
+            return response()->json([
+                'status' => 'errors',
+                'message' => 'members has actived loans'
+            ], 404);
+        }
+
         $loan = new Loan();
         $loan->book_id = $request->book_id;
         $loan->member_id = $request->member_id;
         $loan->loan_date = $request->loan_date;
+        $loan->jumlah = 1;
         $loan->status = 'pending';
         $loan->staff_id = auth()->id();
         $loan->save();
