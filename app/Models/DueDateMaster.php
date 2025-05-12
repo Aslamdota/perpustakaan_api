@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class due_date_master extends Model
+class DueDateMaster extends Model
 {
     protected $guarded = [];
 }

@@ -8,7 +8,7 @@ use App\Models\Borrowing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-use App\Models\due_date_master;
+use App\Models\DueDateMaster;
 use App\Models\Member;
 
 class LoanController extends Controller
