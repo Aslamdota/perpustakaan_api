@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('finemasters', function (Blueprint $table) {
+        Schema::create('fine_masters', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('fine_amount');
-            $table->date('date_priode');
-            $table->enum('status', ['active', 'nonactive']);
+            $table->decimal('fine_amount', 10, 2);
+            $table->integer('grace_period'); // in days
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

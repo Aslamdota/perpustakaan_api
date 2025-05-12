@@ -32,6 +32,14 @@
                 <div class="menu-title">Peminjaman</div>
             </a>
         </li>
+        <li>
+            <a href="{{ url('returns') }}">
+                <div class="parent-icon"><i class='bx bx-bookmark-alt'></i>
+                </div>
+                <div class="menu-title">Pengembalian</div>
+            </a>
+        </li>
+        
 
         <li>
             <a href="javascript:;" class="has-arrow">

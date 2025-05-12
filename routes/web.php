@@ -7,6 +7,7 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\member\MembersController;
 use App\Http\Controllers\member\UsersController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\FineMasterController;
 use App\Http\Controllers\peminjaman\PeminjamanController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,3 +39,14 @@ Route::post('/storeUsers', [UsersController::class, 'storeUsers'])->name('store.
 Route::get('/viewCategory', [CategoryController::class, 'viewCategory'])->name('view.category')->middleware('auth');
 Route::post('/addCategory', [CategoryController::class, 'addCategory'])->name('add.category')->middleware('auth');
 
+
+// Returns routes
+Route::get('/loans/{loan}', [PeminjamanController::class, 'show'])->name('loans.show');
+
+Route::get('/returns', [PeminjamanController::class, 'returnsIndex'])->name('returns.index');
+Route::get('/returns/data', [PeminjamanController::class, 'getLoansForReturn'])->name('returns.data');
+Route::post('/loans/{loan}/return', [PeminjamanController::class, 'returnBook'])->name('loans.return');
+
+// Fine settings routes
+Route::get('/fine-settings', [FineMasterController::class, 'getFineSettings'])->name('fine.get');
+Route::post('/fine-settings', [FineMasterController::class, 'updateFineSettings'])->name('fine.update');

@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Loan;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\Finemaster;
+use Carbon\Carbon;
+use App\Models\Book;
 class PeminjamanController extends Controller
 {
     public function viewPeminjaman(){
@@ -98,5 +100,83 @@ class PeminjamanController extends Controller
             'message' => 'Book loan rejected',
             'data' => $loan->load(['book', 'member', 'staff'])
         ], 200);
+    }
+
+    public function returnsIndex()
+    {
+        return view('pengembalian.returns',  ['title' => 'viewPengembalian']);
+    }
+
+    public function show(Loan $loan)
+    {
+        return response()->json([
+            'id' => $loan->id,
+            'loan_date' => $loan->loan_date,
+            'due_date' => $loan->due_date,
+            'book_id' => $loan->book_id,
+            'member_id' => $loan->member_id,
+            // Add any other fields you need
+        ]);
+    }
+
+    public function returnBook(Request $request, Loan $loan)
+    {
+        $request->validate([
+            'return_date' => 'required|date',
+            'notes' => 'nullable|string'
+        ]);
+
+        if ($loan->status === 'returned') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Buku ini sudah dikembalikan sebelumnya'
+            ], 400);
+        }
+
+        $returnDate = Carbon::parse($request->return_date);
+        $dueDate = Carbon::parse($loan->due_date);
+        
+        $loan->return_date = $returnDate;
+        $loan->noted = $request->notes;
+        
+        // Get fine settings
+        $fineMaster = FineMaster::where('status', 'active')->first();
+        
+        if ($returnDate->gt($dueDate)) {
+            $daysLate = $returnDate->diffInDays($dueDate);
+            $loan->fine = $daysLate * $fineMaster->fine_amount;
+            $loan->status = 'overdue';
+        } else {
+            $loan->fine = 0;
+            $loan->status = 'returned';
+        }
+        
+        $loan->save();
+
+        // Increase book stock
+        $book = Book::find($loan->book_id);
+        $book->stock += $loan->jumlah;
+        $book->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pengembalian buku berhasil dicatat',
+            'data' => $loan
+        ]);
+    }
+
+    public function getLoansForReturn()
+    {
+        $loans = Loan::with(['book', 'member'])
+            ->whereIn('status', ['borrowed', 'overdue'])
+            ->get();
+
+        return datatables()->of($loans)
+            ->addIndexColumn()
+            ->addColumn('action', function($loan) {
+                return '<button class="btn btn-sm btn-primary process-return" data-id="'.$loan->id.'">Proses</button>';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
     }
 }

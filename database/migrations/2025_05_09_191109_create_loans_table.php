@@ -17,9 +17,12 @@ return new class extends Migration
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
             $table->foreignId('staff_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('loan_date');
+            $table->date('due_date');
             $table->integer('jumlah');
             $table->string('noted')->nullable();
             $table->enum('status', ['pending', 'borrowed', 'returned', 'rejected', 'overdue'])->default('pending');
+            $table->date('return_date')->nullable();
+            $table->bigInteger('fine')->nullable();
             $table->timestamps();
         });
     }
