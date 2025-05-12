@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('fine_amount');
             $table->date('date_priode');
+            $table->enum('status', ['active', 'nonactive']);
             $table->timestamps();
         });
     }

@@ -7,6 +7,10 @@ use App\Models\Loan;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use App\Models\due_date_master;
+use App\Models\Finemaster;
+
 
 class LoanController extends Controller
 {
@@ -95,6 +99,8 @@ class LoanController extends Controller
             ], 422);
         }
 
+        $now = Carbon::now();
+
         $book = Book::find($request->book_id);
         if ($book->stock <= 0) {
             return response()->json([
@@ -103,31 +109,45 @@ class LoanController extends Controller
             ], 400);
         }
 
-        $activeLoan = Loan::where('member_id', $request->member_id)
-                            ->whereIn('status', ['pending', 'borrowed'])
-                            ->exists();
         
-        if ($activeLoan) {
+        $loanValidation = Loan::whereMonth('loan_date', $now->month)
+        ->whereYear('loan_date', $now->year)
+        ->where('book_id', $request->book_id)
+        ->where('member_id', $request->member_id)
+        ->first();
+
+        if (!$loanValidation || in_array($loanValidation->status, ['returned', 'rejected'])) {
+
+        $duedate = due_date_master::where('status', 'active')->first();
+
+        if ($duedate && $now < $duedate) {
+            $loan = new Loan();
+            $loan->book_id = $request->book_id;
+            $loan->member_id = $request->member_id;
+            $loan->loan_date = $duedate;
+            $loan->jumlah = 1;
+            $loan->status = 'pending';
+            $loan->staff_id = auth()->id();
+            $loan->save();
+
             return response()->json([
-                'status' => 'errors',
-                'message' => 'members has actived loans'
-            ], 404);
+                'status' => 'success',
+                'message' => 'Book loan request created',
+                'data' => $loan->load(['book', 'member', 'staff'])
+            ], 201);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Loan request failed. Due date has passed.',
+            ], 422);
         }
 
-        $loan = new Loan();
-        $loan->book_id = $request->book_id;
-        $loan->member_id = $request->member_id;
-        $loan->loan_date = $request->loan_date;
-        $loan->jumlah = 1;
-        $loan->status = 'pending';
-        $loan->staff_id = auth()->id();
-        $loan->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Book loan request created',
-            'data' => $loan->load(['book', 'member', 'staff'])
-        ], 201);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You have already borrowed this book this month.',
+            ], 409);
+        }
     }
 
     public function approveBorrowing($id, Request $request)
