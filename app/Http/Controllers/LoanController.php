@@ -118,13 +118,15 @@ class LoanController extends Controller
 
         if (!$loanValidation || in_array($loanValidation->status, ['returned', 'rejected'])) {
 
-        $duedate = due_date_master::where('status', 'active')->first();
+        $duedate = due_date_master::where('status', 'active')
+        ->orderBy('due_date', 'desc')
+        ->first();
 
         if ($duedate && $now < $duedate) {
             $loan = new Loan();
             $loan->book_id = $request->book_id;
             $loan->member_id = $request->member_id;
-            $loan->loan_date = $duedate;
+            $loan->loan_date = $duedate->due_date;
             $loan->jumlah = 1;
             $loan->status = 'pending';
             $loan->staff_id = auth()->id();
