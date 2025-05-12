@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\due_date_master;
-use App\Models\Finemaster;
 
 
 class LoanController extends Controller
@@ -118,31 +117,31 @@ class LoanController extends Controller
 
         if (!$loanValidation || in_array($loanValidation->status, ['returned', 'rejected'])) {
 
-        $duedate = due_date_master::where('status', 'active')
-        ->orderBy('due_date', 'desc')
-        ->first();
+            $duedate = due_date_master::where('status', 'active')
+            ->orderBy('due_date', 'desc')
+            ->first();
 
-        if ($duedate && $now < $duedate) {
-            $loan = new Loan();
-            $loan->book_id = $request->book_id;
-            $loan->member_id = $request->member_id;
-            $loan->loan_date = $duedate->due_date;
-            $loan->jumlah = 1;
-            $loan->status = 'pending';
-            $loan->staff_id = auth()->id();
-            $loan->save();
+            if ($duedate && $now < $duedate) {
+                $loan = new Loan();
+                $loan->book_id = $request->book_id;
+                $loan->member_id = $request->member_id;
+                $loan->loan_date = $duedate->due_date;
+                $loan->jumlah = 1;
+                $loan->status = 'pending';
+                $loan->staff_id = auth()->id();
+                $loan->save();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Book loan request created',
-                'data' => $loan->load(['book', 'member', 'staff'])
-            ], 201);
-        } else {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Loan request failed. Due date has passed.',
-            ], 422);
-        }
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Book loan request created',
+                    'data' => $loan->load(['book', 'member', 'staff'])
+                ], 201);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Loan request failed. Due date has passed.',
+                ], 422);
+            }
 
         } else {
             return response()->json([

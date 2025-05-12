@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Finemaster;
 
 class ReturnBook extends Controller
 {
@@ -62,11 +63,11 @@ class ReturnBook extends Controller
         $today = Carbon::today();
         
         $loan->return_date = $today;
-        
-        // Calculate fine if returned late
+        $finemaster = Finemaster::where('status', 'active')->first();
+
         if ($today->isAfter($loan->due_date)) {
-            $daysLate = $today->diffInDays($loan->due_date);
-            $finePerDay = 1000; // Rp 1.000 per day
+            $daysLate = $today->diffInDays($finemaster->date_priode);
+            $finePerDay = $finemaster->fine_amount;
             $loan->fine = $daysLate * $finePerDay;
             $loan->status = 'overdue';
         } else {
