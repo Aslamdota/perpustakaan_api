@@ -5,12 +5,32 @@ namespace App\Http\Controllers\peminjaman;
 use App\Http\Controllers\Controller;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\Loan;
 
 class PeminjamanController extends Controller
 {
     public function viewPeminjaman(){
-        $borrowings = Borrowing::where('status', 'pending')->get();
-        return view('peminjaman.index', ['title' => 'viewPeminjaman'], compact('borrowings'));
+        if(request()->ajax()) {
+           $borrowings = Loan::where('status', 'pending')->with(['book', 'member', 'staff'])
+            ->select('loans.*');
+
+        return DataTables::of($borrowings)
+            ->addIndexColumn()
+            ->addColumn('book_title', function($row) {
+                return $row->book->title;
+            })
+            ->addColumn('member_name', function($row) {
+                return $row->member->name;
+            })
+            ->addColumn('action', function($row) {
+                return $row->id;
+            })
+            ->rawColumns(['action', 'status'])
+            ->make(true);
+        }
+
+        return view('peminjaman.index', ['title' => 'viewPeminjaman']);
     }
 
     public function confirm(Request $request, $id)

@@ -26,8 +26,8 @@ Route::post('/storeBook', [BooksController::class, 'storeBook'])->name('store.bo
 
 // Route::get('/peminjaman', [LoanController::class, 'index'])->name('loans.index');
 Route::get('/viewPeminjaman', [PeminjamanController::class, 'viewPeminjaman'])->name('view.peminjaman')->middleware('auth');
-Route::post('/borrowings/{id}/confirm', [PeminjamanController::class, 'confirm'])->name('borrowings.confirm')->middleware('auth');
-Route::post('/borrowings/{id}/reject', [PeminjamanController::class, 'reject'])->name('borrowings.reject')->middleware('auth');
+Route::post('/borrowings/confirm/{id}', [PeminjamanController::class, 'confirm'])->name('borrowings.confirm')->middleware('auth');
+Route::post('/borrowings/reject/{id}', [PeminjamanController::class, 'reject'])->name('borrowings.reject')->middleware('auth');
 
 Route::get('/viewMembers', [MembersController::class, 'viewMembers'])->name('view.member')->middleware('auth');
 Route::post('/storeMembers', [MembersController::class, 'storeMember'])->name('store.member')->middleware('auth');

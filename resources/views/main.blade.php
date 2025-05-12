@@ -39,6 +39,8 @@
 
 	<title>{{ $title }}</title>
 
+	@stack('css')
+
 	
 </head>
 
@@ -233,6 +235,7 @@
         document.getElementById('remove-button').style.display = 'none';
     }
 </script>
+@stack('js')
 </body>
 
 
