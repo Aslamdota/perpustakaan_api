@@ -53,6 +53,36 @@
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class='bx bx-cart'></i>
                 </div>
+                <div class="menu-title">Member</div>
+            </a>
+            <ul>
+                <li> <a href="{{ route('view.member') }}"><i class='bx bx-radio-circle'></i>Tabel Member</a>
+                </li>
+                <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Edit Member</a>
+                </li>
+                
+            </ul>
+        </li>
+
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class='bx bx-cart'></i>
+                </div>
+                <div class="menu-title">User</div>
+            </a>
+            <ul>
+                <li> <a href="{{ route('view.user') }}"><i class='bx bx-radio-circle'></i>Tabel User</a>
+                </li>
+                <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Edit User</a>
+                </li>
+                
+            </ul>
+        </li>
+
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class='bx bx-cart'></i>
+                </div>
                 <div class="menu-title">Category</div>
             </a>
             <ul>

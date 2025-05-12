@@ -209,6 +209,30 @@
 	<script>
 		new PerfectScrollbar(".app-container")
 	</script>
+
+	{{-- upload image--}}
+	<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const preview = document.getElementById('image-preview');
+                preview.innerHTML = `<img src="${reader.result}" alt="Preview">`;
+                preview.style.display = 'block';
+                document.getElementById('remove-button').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeImage() {
+        document.getElementById('image-preview').style.display = 'none';
+        document.getElementById('image-preview').innerHTML = '';
+        document.getElementById('fancy-file-upload').value = '';
+        document.getElementById('remove-button').style.display = 'none';
+    }
+</script>
 </body>
 
 
