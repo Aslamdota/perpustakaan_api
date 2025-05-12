@@ -112,49 +112,54 @@ class LoanController extends Controller
             ], 400);
         }
 
-        
-        $loanValidation = Loan::whereMonth('loan_date', $now->month)
-        ->whereYear('loan_date', $now->year)
-        ->where('book_id', $request->book_id)
-        ->where('member_id', $request->member_id)
-        ->first();
-
-        if (!$loanValidation || in_array($loanValidation->status, ['returned', 'rejected'])) {
-
-            $duedate = due_date_master::where('status', 'active')
-            ->orderBy('due_date', 'desc')
+        // Check if member already has an active loan for this book
+        $existingLoan = Loan::where('book_id', $request->book_id)
+            ->where('member_id', Member::where('member_id', $request->member_id)->first()->id)
+            ->whereNotIn('status', ['returned', 'rejected'])
             ->first();
 
-            $member = Member::where('member_id', $request->member_id)->first();
-            $randomStaff = \App\Models\User::whereIn('role', ['admin', 'karyawan'])->inRandomOrder()->first();
-
-            if ($duedate && $now < Carbon::parse($duedate->due_date)) {
-                $loan = new Loan();
-                $loan->book_id = $request->book_id;
-                $loan->member_id = $member->id;
-                $loan->loan_date = $duedate->due_date;
-                $loan->jumlah = 1;
-                $loan->status = 'pending';
-                $loan->staff_id = $randomStaff ? $randomStaff->id : null;
-                $loan->save();
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Book loan request created',
-                    'data' => $loan->load(['book', 'member', 'staff'])
-                ], 201);
-            } else {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Loan request failed. Due date has passed.',
-                ], 422);
-            }
-
-        } else {
+        if ($existingLoan) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'You have already borrowed this book this month.',
+                'message' => 'You have already borrowed this book and it has not been returned yet.',
             ], 409);
+        }
+
+        // Get active due date settings
+        $dueDateSetting = DueDateMaster::where('status', 'active')->first();
+
+        if (!$dueDateSetting) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Due date configuration not found'
+            ], 400);
+        }
+
+        $member = Member::where('member_id', $request->member_id)->first();
+        $randomStaff = User::whereIn('role', ['admin', 'karyawan'])->inRandomOrder()->first();
+
+        try {
+            $loan = new Loan();
+            $loan->book_id = $request->book_id;
+            $loan->member_id = $member->id;
+            $loan->loan_date = $now; // Set loan date to current time
+            $loan->due_date = Carbon::parse($dueDateSetting->due_date); // Set due date from settings
+            $loan->jumlah = 1;
+            $loan->status = 'pending';
+            $loan->staff_id = $randomStaff ? $randomStaff->id : null;
+            $loan->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Book loan request created successfully',
+                'data' => $loan->load(['book', 'member', 'staff'])
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create loan: ' . $e->getMessage()
+            ], 500);
         }
     }
 
