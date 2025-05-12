@@ -10,13 +10,81 @@
 <div class="page-wrapper">
     <div class="page-content">
 
+        <!-- Modaal konfirm -->
+        <div class="modal fade modal-center" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="formModalLabel">Konfirmasi Peminjaman</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" novalidate="">
+                            <div class="col-md-6">
+                                <label for="bsValidation1" class="form-label">Tanggal Dikembalikan</label>
+                                <input type="date" class="form-control" id="bsValidation1" placeholder="" required="" name="name">
+                                <div class="valid-feedback">
+                                    Looks good!
+                                  </div>
+                            </div>
+                           
+                            
+                            <div class="col-md-12">
+                                <label for="bsValidation13" class="form-label">Address</label>
+                                <textarea class="form-control" id="bsValidation13" placeholder="Address ..." rows="3" required=""></textarea>
+                                <div class="invalid-feedback">
+                                    Please enter a valid address.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <div class="d-md-flex d-grid align-items-center gap-3">
+                                    <button type="submit" class="btn btn-primary px-4">Submit</button>
+                                    <button type="reset" class="btn btn-light px-4">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Modaal tolak -->
+        <div class="modal fade modal-center" id="formTolak" tabindex="-1" aria-labelledby="formTolakLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="formModalLabel">Catatan Penolakan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" novalidate="">
+                           
+                            <div class="col-md-12">
+                                <label for="bsValidation13" class="form-label">Alasan</label>
+                                <textarea class="form-control" id="bsValidation13" placeholder="Masukan Alasan ..." rows="3" required=""></textarea>
+                                <div class="invalid-feedback">
+                                    Please enter a valid address.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <div class="d-md-flex d-grid align-items-center gap-3">
+                                    <button type="submit" class="btn btn-primary px-4">Submit</button>
+                                    <button type="reset" class="btn btn-light px-4">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <div class="card radius-10">
             <div class="card-header bg-transparent">
                 <div class="d-flex align-items-center">
-
+                    
                     <div class="dropdown ms-auto">
                         <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class="bx bx-dots-horizontal-rounded font-22 text-option"></i>
                         </a>
@@ -45,38 +113,33 @@
                   <th>Tanggal Peminjaman</th>
                   <th>Status</th>
                   <th>Aksi</th>
-
+                  
                 </tr>
                 </thead>
                 <tbody><tr>
-                    @foreach($loans as $loan)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $loan->book->title }}</td>
-                            <td>{{ $loan->member->name }}</td>
-                            <td>{{ $loan->created_at->format('Y-m-d') }}</td>
-                            <td>{{ $loan->status }}</td>
-                            <td>
-                                @if($loan->status == 'Pending')
-                                    <form action="{{ route('loans.update', $loan->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <button name="status" value="Approved" class="btn btn-success">Terima</button>
-                                        <button name="status" value="Rejected" class="btn btn-danger">Tolak</button>
-                                    </form>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tr>
-                </tbody>
+                 @foreach ($borrowings as $key => $item)
+                 <td>{{ $key +1 }}</td>
+                 <td>{{ $item->book->title }}</td>
+                 <td>{{ $item->member->name }}</td>
+                 <td>{{ date('d F Y', strtotime($item->borrow_date)) }}</td>
+                 <td><span class="badge bg-gradient-quepal text-white shadow-sm w-10">{{ $item->status }}</span></td>
+                 <td>
+                    <a href="{{ $item->id }}" class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#formModal">Konfirm</a>
+                    <a href="{{ $item->id }}" class="badge bg-danger" data-bs-toggle="modal" data-bs-target="#formTolak">Tolak</a>
+                </td>
+                 @endforeach
+                 
                 </tr>
+
+                
+
+                
                </tbody>
              </table>
              </div>
             </div>
         </div>
-
+        
 
             </div>
         </div>
