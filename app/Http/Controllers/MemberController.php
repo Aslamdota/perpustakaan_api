@@ -87,14 +87,15 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Member $member)
+  public function update(Request $request, Member $member)
     {
         $validasi = Validator::make($request->all(), [
             'name' => 'required|string|max:15',
-            'member_id' => 'required|string',
+            'member_id' => 'sometimes|required|string',
             'email' => 'required|email|unique:members,email,' . $member->id,
             'phone' => 'required',
-            'address' => 'required|string|max:255'
+            'address' => 'required|string|max:255',
+            'password' => 'sometimes|nullable|string|min:6'
         ]);
 
         if ($validasi->fails()) {
@@ -104,11 +105,15 @@ class MemberController extends Controller
             ], 422);
         }
 
-        if($request->has('name')) $member->name = $request->name;
-        // if($request->has('member_id')) $member->member_id = $request->member_id;
-        if($request->has('email')) $member->email = $request->email;
-        if($request->has('phone')) $member->phone = $request->phone;
-        if($request->has('address')) $member->address = $request->address;
+        $member->name = $request->input('name', $member->name);
+        $member->member_id = $request->input('member_id', $member->member_id);
+        $member->email = $request->input('email', $member->email);
+        $member->phone = $request->input('phone', $member->phone);
+        $member->address = $request->input('address', $member->address);
+
+        if ($request->filled('password')) {
+            $member->password = bcrypt($request->password);
+        }
 
         if ($request->hasFile('avatar')) {
             if ($member->avatar !== 'avatar.jpg') {
@@ -124,10 +129,11 @@ class MemberController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'members has updated success',
+            'message' => 'Member updated successfully',
             'data' => $member
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -216,14 +222,12 @@ class MemberController extends Controller
     // }
     
 
-    public function updatePassword($id, Request $request){
-        
-        //  dd($request->all());
-        $member = Member::findOrFail($id);
-
+    public function updatePassword(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            // 'current_password' => 'required|string|min:8',
-            // 'new_password' => 'required|string|min:8|confirmed',
+            'member_id' => 'required|string|exists:members,member_id',
+            'current_password' => 'required|string|min:6',
+            'new_password' => 'required|string|min:6|confirmed',
         ]);
 
         if ($validator->fails()) {
@@ -233,10 +237,12 @@ class MemberController extends Controller
             ], 422);
         }
 
+        $member = Member::where('member_id', $request->member_id)->first();
+
         if (!Hash::check($request->current_password, $member->password)) {
             return response()->json([
-                'status' => 'errors',
-                'message' => 'Old password not true'
+                'status' => 'error',
+                'message' => 'Current password is incorrect.'
             ], 403);
         }
 
@@ -245,12 +251,11 @@ class MemberController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Password Has updated',
+            'message' => 'Password has been updated.',
             'data' => $member
         ], 200);
-
-
     }
+
 
     public function ProfilUser(){
         // $member = Member::findOrFail($id);
