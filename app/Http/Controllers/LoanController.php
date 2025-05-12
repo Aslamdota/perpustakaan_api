@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\due_date_master;
-
+use App\Models\Member;
 
 class LoanController extends Controller
 {
@@ -87,8 +87,7 @@ class LoanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
-            'member_id' => 'required|exists:members,id',
-            'loan_date' => 'required|date|date_format:Y-m-d',
+            'member_id' => 'required|exists:members,member_id',
         ]);
 
         if ($validator->fails()) {
@@ -121,14 +120,17 @@ class LoanController extends Controller
             ->orderBy('due_date', 'desc')
             ->first();
 
-            if ($duedate && $now < $duedate) {
+            $member = Member::where('member_id', $request->member_id)->first();
+            $randomStaff = \App\Models\User::whereIn('role', ['admin', 'karyawan'])->inRandomOrder()->first();
+
+            if ($duedate && $now < Carbon::parse($duedate->due_date)) {
                 $loan = new Loan();
                 $loan->book_id = $request->book_id;
-                $loan->member_id = $request->member_id;
+                $loan->member_id = $member->id;
                 $loan->loan_date = $duedate->due_date;
                 $loan->jumlah = 1;
                 $loan->status = 'pending';
-                $loan->staff_id = auth()->id();
+                $loan->staff_id = $randomStaff ? $randomStaff->id : null;
                 $loan->save();
 
                 return response()->json([
