@@ -43,11 +43,16 @@ class LoanController extends Controller
 
     public function getBorrowing()
     {
-        $borrowing = Borrowing::where('status', 'pending')->with(['book', 'member', 'staff'])->get();
+        $borrowings = Loan::where('status', 'pending')->with(['book', 'member', 'staff'])->get();
+
+        $borrowings = $borrowings->map(function ($loan) {
+            $loan->book_title = $loan->book->title ?? null;
+            return $loan;
+        });
 
         return response()->json([
             'status' => 'success',
-            'data' => $borrowing
+            'data' => $borrowings
         ]);
     }
 

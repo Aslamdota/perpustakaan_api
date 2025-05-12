@@ -26,4 +26,10 @@ class Loan extends Model
     {
         return $this->belongsTo(User::class, 'staff_id');
     }
+
+    public function getBookTitleAttribute()
+    {
+        return $this->book ? $this->book->title : null;
+    }
+
 }
