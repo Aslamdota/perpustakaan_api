@@ -135,7 +135,8 @@ class PeminjamanController extends Controller
             'return_date' => $loan->return_date,
             'status' => $loan->status,
             'fine' => $loan->fine,
-            'notes' => $loan->noted // Note the field name difference (noted vs notes)
+            'notes' => $loan->noted,
+            'id' => $loan->id, // Note the field name difference (noted vs notes)
         ]);
     }
 
