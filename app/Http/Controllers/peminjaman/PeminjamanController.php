@@ -115,13 +115,27 @@ class PeminjamanController extends Controller
 
     public function show(Loan $loan)
     {
+        // Load the relationships
+        $loan->load(['book', 'member']);
+        
         return response()->json([
-            'id' => $loan->id,
+            'book' => [
+                'title' => $loan->book->title,
+                'code' => $loan->book->code,
+                'isbn' => $loan->book->isbn,
+                'author' => $loan->book->author
+            ],
+            'member' => [
+                'name' => $loan->member->name,
+                'member_id' => $loan->member->member_id,
+                'email' => $loan->member->email
+            ],
             'loan_date' => $loan->loan_date,
             'due_date' => $loan->due_date,
-            'book_id' => $loan->book_id,
-            'member_id' => $loan->member_id,
-            // Add any other fields you need
+            'return_date' => $loan->return_date,
+            'status' => $loan->status,
+            'fine' => $loan->fine,
+            'notes' => $loan->noted // Note the field name difference (noted vs notes)
         ]);
     }
 
@@ -174,7 +188,7 @@ class PeminjamanController extends Controller
     public function getLoansForReturn()
     {
         $loans = Loan::with(['book', 'member'])
-            ->whereIn('status', ['borrowed', 'overdue'])
+            ->whereIn('status', ['returned', 'overdue'])
             ->get();
 
         return datatables()->of($loans)
@@ -186,16 +200,55 @@ class PeminjamanController extends Controller
             ->toJson();
     }
 
-    public function getLoansForReturnHistory()
+    public function getLoansForReturnHistory(Request $request)
     {
-        $loans = Loan::with(['book', 'member'])
-            ->where('status', 'returned')
-            ->get();
+        $query = Loan::with(['book', 'member'])
+            ->where('status', '!=', 'pending');
 
-        return datatables()->of($loans)
+        // Date range filter
+        if ($request->has('date_range') && $request->date_range) {
+            $dates = explode(' - ', $request->date_range);
+            $startDate = Carbon::parse($dates[0])->startOfDay();
+            $endDate = Carbon::parse($dates[1])->endOfDay();
+            
+            $query->whereBetween('loan_date', [$startDate, $endDate]);
+        }
+
+        // Status filter
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // Search filter
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('book', function($q) use ($search) {
+                    $q->where('title', 'like', '%'.$search.'%')
+                      ->orWhere('code', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('member', function($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%')
+                      ->orWhere('member_id', 'like', '%'.$search.'%');
+                });
+            });
+        }
+
+        return datatables()->eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function($loan) {
-                return '<button class="btn btn-sm btn-primary process-return" data-id="'.$loan->id.'">Proses</button>';
+                return '<button class="btn btn-sm btn-outline-secondary view-detail" data-id="'.$loan->id.'">
+                    <i class="bx bx-show"></i>
+                </button>';
+            })
+            ->editColumn('loan_date', function($loan) {
+                return $loan->loan_date ? Carbon::parse($loan->loan_date)->format('Y-m-d') : null;
+            })
+            ->editColumn('due_date', function($loan) {
+                return $loan->due_date ? Carbon::parse($loan->due_date)->format('Y-m-d') : null;
+            })
+            ->editColumn('return_date', function($loan) {
+                return $loan->return_date ? Carbon::parse($loan->return_date)->format('Y-m-d') : null;
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -205,6 +258,21 @@ class PeminjamanController extends Controller
     {
         $loans = Loan::with(['book', 'member'])
             ->where('status', 'pending')
+            ->get();
+
+        return datatables()->of($loans)
+            ->addIndexColumn()
+            ->addColumn('action', function($loan) {
+                return '<button class="btn btn-sm btn-primary process-return" data-id="'.$loan->id.'">Proses</button>';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+    public function getLoansForBorrowing()
+    {
+        $loans = Loan::with(['book', 'member'])
+            ->where('status', 'borrowed')
             ->get();
 
         return datatables()->of($loans)

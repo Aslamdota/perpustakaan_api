@@ -47,6 +47,8 @@ Route::get('/returns', [PeminjamanController::class, 'returnsIndex'])->name('ret
 Route::get('/returnsHistory', [PeminjamanController::class, 'returnsHistory'])->name('returns.history');
 
 Route::get('/returns/data', [PeminjamanController::class, 'getLoansForReturn'])->name('returns.data');
+Route::get('/returns/data_borrowing', [PeminjamanController::class, 'getLoansForBorrowing'])->name('returns.data_borrowing');
+
 Route::get('/returns/data_pending', [PeminjamanController::class, 'getLoansForReturnPending'])->name('returns.pending_data');
 Route::get('/returns/data_history', [PeminjamanController::class, 'getLoansForReturnHistory'])->name('returns.history_data');
 

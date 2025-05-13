@@ -211,10 +211,16 @@
             <div class="card-body">
                 <ul class="nav nav-tabs nav-primary mb-4" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#pendingReturns" role="tab" aria-selected="true">
-                            <i class="bx bx-time me-1"></i> Pending
+                        <a class="nav-link active" data-bs-toggle="tab" href="#pinjamReturns" role="tab" aria-selected="true">
+                            <i class="bx bx-time me-1"></i> Pinjam
                         </a>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" data-bs-toggle="tab" href="#kembaliReturns" role="tab" aria-selected="false">
+                            <i class="bx bx-time me-1"></i> Kembali
+                        </a>
+                    </li>
+                    
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" data-bs-toggle="tab" href="#returnHistory" role="tab" aria-selected="false">
                             <i class="bx bx-history me-1"></i> Riwayat
@@ -223,9 +229,30 @@
                 </ul>
                 
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="pendingReturns" role="tabpanel">
+                    <div class="tab-pane fade show active" id="pinjamReturns" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="pending-table" class="table table-return table-hover" style="width:100%">
+                            <table id="pinjam-table" class="table table-return table-hover" style="width:100%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="5%">No</th>
+                                        <th width="10%">Kode</th>
+                                        <th>Buku</th>
+                                        <th>Member</th>
+                                        <th width="10%">Pinjam</th>
+                                        <th width="10%">Jatuh Tempo</th>
+                                        <th width="10%">Status</th>
+                                        <th width="10%">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be loaded via AJAX -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="kembaliReturns" role="tabpanel">
+                        <div class="table-responsive">
+                            <table id="kembali-table" class="table table-return table-hover" style="width:100%">
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
@@ -284,6 +311,7 @@
                                         <th width="10%">Kembali</th>
                                         <th width="10%">Denda</th>
                                         <th width="10%">Status</th>
+                                        <th width="10%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -567,14 +595,13 @@ $(document).ready(function() {
     }
     
     // Initialize DataTables only if tables exist
-    var pendingTable, historyTable;
-    
-    if ($('#pending-table').length) {
-        pendingTable = $('#pending-table').DataTable({
+    var kembaliTable, historyTable, pinjamTable;
+    if ($('#pinjam-table').length) {
+        pinjamTable = $('#pinjam-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('returns.pending_data') }}",
+                url: "{{ route('returns.data_borrowing') }}",
                 type: "GET"
             },
             language: {
@@ -711,6 +738,146 @@ $(document).ready(function() {
         });
     }
 
+    
+    if ($('#kembali-table').length) {
+        kembaliTable = $('#kembali-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('returns.data') }}",
+                type: "GET"
+            },
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Tidak ada peminjaman yang perlu diproses",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                infoFiltered: "(disaring dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            },
+            columns: [
+                { 
+                    data: 'DT_RowIndex', 
+                    name: 'DT_RowIndex', 
+                    orderable: false, 
+                    searchable: false,
+                    className: 'text-center'
+                },
+                { 
+                    data: 'id', 
+                    name: 'id',
+                    className: 'text-center',
+                    render: function(data) {
+                        return 'PJ-' + (data ? data.toString().padStart(4, '0') : '0000');
+                    }
+                },
+                { 
+                    data: 'book.title', 
+                    name: 'book.title',
+                    render: function(data, type, row) {
+                        if (!row.book) return '-';
+                        return `<div class="d-flex align-items-center cursor-pointer" onclick="showBookDetail(${row.book.id || 0})">
+                            <div class="ms-2">
+                                <h6 class="mb-0 text-ellipsis">${data || '-'}</h6>
+                                <small class="text-muted">Kode: ${row.book.code || '-'}</small>
+                            </div>
+                        </div>`;
+                    }
+                },
+                { 
+                    data: 'member.name', 
+                    name: 'member.name',
+                    render: function(data, type, row) {
+                        if (!row.member) return '-';
+                        return `<div class="cursor-pointer" onclick="showMemberDetail(${row.member.id || 0})">
+                            <h6 class="mb-0 text-ellipsis">${data || '-'}</h6>
+                            <small class="text-muted">ID: ${row.member.member_id || '-'}</small>
+                        </div>`;
+                    }
+                },
+                { 
+                    data: 'loan_date', 
+                    name: 'loan_date',
+                    render: function(data) {
+                        return data ? moment(data).format('DD MMM YYYY') : '-';
+                    }
+                },
+                { 
+                    data: 'due_date', 
+                    name: 'due_date',
+                    render: function(data) {
+                        if (!data) return '-';
+                        const dueDate = moment(data);
+                        const today = moment();
+                        const isOverdue = dueDate.isBefore(today, 'day');
+                        
+                        return `<span class="fw-bold ${isOverdue ? 'text-danger' : ''}">${dueDate.format('DD MMM YYYY')}</span>`;
+                    }
+                },
+                { 
+                    data: 'status', 
+                    name: 'status',
+                    className: 'text-center',
+                    render: function(data) {
+                        let statusText = '';
+                        switch(data) {
+                            case 'pending': statusText = 'Menunggu'; break;
+                            case 'borrowed': statusText = 'Dipinjam'; break;
+                            case 'returned': statusText = 'Dikembalikan'; break;
+                            case 'rejected': statusText = 'Ditolak'; break;
+                            case 'overdue': statusText = 'Terlambat'; break;
+                            default: statusText = data || '-';
+                        }
+                        return `<span class="status-badge badge-${data || ''}">${statusText}</span>`;
+                    }
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        if (!row.id) return '-';
+                        return `
+                            <div class="btn-group" role="group">                                
+                                <button class="btn btn-sm btn-outline-secondary view-detail" data-id="${row.id}" title="LihatDetail">
+                                    <i class="bx bx-show"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            drawCallback: function(settings) {
+                // Add hover effects
+                $('.process-return').hover(
+                    function() {
+                        $(this).addClass('shadow-sm');
+                    },
+                    function() {
+                        $(this).removeClass('shadow-sm');
+                    }
+                );
+                
+                $('.view-detail').hover(
+                    function() {
+                        $(this).addClass('shadow-sm');
+                    },
+                    function() {
+                        $(this).removeClass('shadow-sm');
+                    }
+                );
+            }
+        });
+    }
+
     if ($('#history-table').length) {
         historyTable = $('#history-table').DataTable({
             processing: true,
@@ -719,6 +886,7 @@ $(document).ready(function() {
                 url: "{{ route('returns.history_data') }}",
                 type: "GET",
                 data: function(d) {
+                    // Add your filter parameters here
                     d.date_range = $('#date-range-filter').val();
                     d.status = $('#status-filter').val();
                     d.search = $('#search-history').val();
@@ -824,6 +992,23 @@ $(document).ready(function() {
                         }
                         return `<span class="status-badge badge-${data || ''}">${statusText}</span>`;
                     }
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        if (!row.id) return '-';
+                        return `
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-secondary view-detail" data-id="${row.id}" title="Lihat Detail">
+                                    <i class="bx bx-show"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
                 }
             ],
             drawCallback: function(settings) {
@@ -838,33 +1023,21 @@ $(document).ready(function() {
                 );
             }
         });
-    }
 
-    // Filter events
-    if ($('#status-filter').length) {
-        $('#status-filter').change(function() {
-            if (typeof historyTable !== 'undefined') {
-                historyTable.draw();
-            }
+        // Add event listeners for filters
+        $('#date-range-filter, #status-filter').change(function() {
+            historyTable.ajax.reload();
         });
-    }
 
-    if ($('#search-history').length) {
         $('#search-history').keyup(function() {
-            if (typeof historyTable !== 'undefined') {
-                historyTable.draw();
-            }
+            historyTable.search($(this).val()).draw();
         });
-    }
 
-    if ($('#reset-filters').length) {
         $('#reset-filters').click(function() {
             $('#date-range-filter').val('');
             $('#status-filter').val('');
             $('#search-history').val('');
-            if (typeof historyTable !== 'undefined') {
-                historyTable.draw();
-            }
+            historyTable.search('').draw();
         });
     }
 
@@ -1032,10 +1205,13 @@ $(document).ready(function() {
                 });
                 
                 $('#returnModal').modal('hide');
-                if (typeof pendingTable !== 'undefined') {
-                    pendingTable.ajax.reload();
+                if (typeof pinjamTable !== 'undefined') {
+                    pinjamTable.ajax.reload();
                 }
                 if (typeof historyTable !== 'undefined') {
+                    historyTable.ajax.reload();
+                }
+                 if (typeof historyTable !== 'undefined') {
                     historyTable.ajax.reload();
                 }
             },
@@ -1098,38 +1274,64 @@ $(document).ready(function() {
     }
 
     // Show detail modal
-    $(document).on('click', '.view-detail', function() {
-        var loanId = $(this).data('id');
+   $(document).on('click', '.view-detail', function() {
+    var loanId = $(this).data('id');
+    
+        // Show the modal immediately with loading state
+        $('#detailModal').modal('show');
+        $('#detailModal .modal-body').html(`
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Memuat detail peminjaman...</p>
+            </div>
+        `);
         
         $.ajax({
             url: "/loans/" + loanId,
             type: "GET",
-            beforeSend: function() {
-                // Show loading indicator
-                $('#detailModal .modal-body').html(`
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Memuat detail peminjaman...</p>
-                    </div>
-                `);
-            },
             success: function(data) {
+                // Check if modal still exists (user hasn't closed it)
+                if (!$('#detailModal').length) return;
+                
                 // Populate modal with data
-                $('#book-title').text(data.book && data.book.title ? data.book.title : '-');
-                $('#book-code').text(data.book && data.book.code ? data.book.code : '-');
-                $('#book-isbn').text(data.book && data.book.isbn ? data.book.isbn : '-');
-                $('#book-author').text(data.book && data.book.author ? data.book.author : '-');
+                let modalContent = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Detail Buku</h5>
+                            <hr>
+                            <p><strong>Judul:</strong> ${data.book?.title || '-'}</p>
+                            <p><strong>Kode:</strong> ${data.book?.code || '-'}</p>
+                            <p><strong>ISBN:</strong> ${data.book?.isbn || '-'}</p>
+                            <p><strong>Pengarang:</strong> ${data.book?.author || '-'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Detail Peminjam</h5>
+                            <hr>
+                            <p><strong>Nama:</strong> ${data.member?.name || '-'}</p>
+                            <p><strong>ID Member:</strong> ${data.member?.member_id || '-'}</p>
+                            <p><strong>Email:</strong> ${data.member?.email || '-'}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5>Detail Peminjaman</h5>
+                            <hr>
+                            <p><strong>Tanggal Pinjam:</strong> ${data.loan_date ? moment(data.loan_date).format('DD MMMM YYYY') : '-'}</p>
+                            <p><strong>Jatuh Tempo:</strong> ${data.due_date ? moment(data.due_date).format('DD MMMM YYYY') : '-'}</p>
+                            <p><strong>Tanggal Kembali:</strong> ${data.return_date ? moment(data.return_date).format('DD MMMM YYYY') : '-'}</p>
+                `;
                 
-                $('#member-name').text(data.member && data.member.name ? data.member.name : '-');
-                $('#member-id').text(data.member && data.member.member_id ? data.member.member_id : '-');
-                $('#member-email').text(data.member && data.member.email ? data.member.email : '-');
+                // Calculate duration
+                if (data.loan_date) {
+                    const loanDate = moment(data.loan_date);
+                    const returnDate = data.return_date ? moment(data.return_date) : moment();
+                    const duration = returnDate.diff(loanDate, 'days') + 1;
+                    modalContent += `<p><strong>Durasi:</strong> ${duration} hari</p>`;
+                }
                 
-                $('#detail-loan-date').text(data.loan_date ? moment(data.loan_date).format('DD MMMM YYYY') : '-');
-                $('#detail-due-date').text(data.due_date ? moment(data.due_date).format('DD MMMM YYYY') : '-');
-                $('#detail-return-date').text(data.return_date ? moment(data.return_date).format('DD MMMM YYYY') : '-');
-                
+                // Status with badge
                 let statusText = '';
                 switch(data.status) {
                     case 'pending': statusText = 'Menunggu'; break;
@@ -1139,24 +1341,28 @@ $(document).ready(function() {
                     case 'overdue': statusText = 'Terlambat'; break;
                     default: statusText = data.status || '-';
                 }
-                $('#detail-status').text(statusText).removeClass().addClass(`badge-${data.status || ''}`);
+                modalContent += `<p><strong>Status:</strong> <span class="badge badge-${data.status || ''}">${statusText}</span></p>`;
                 
-                $('#detail-fine').text(data.fine ? 'Rp ' + parseInt(data.fine).toLocaleString('id-ID') : 'Rp 0');
-                $('#detail-notes').text(data.notes || '-');
+                // Fine and notes
+                modalContent += `
+                            <p><strong>Denda:</strong> ${data.fine ? 'Rp ' + parseInt(data.fine).toLocaleString('id-ID') : 'Rp 0'}</p>
+                            <p><strong>Catatan:</strong> ${data.notes || '-'}</p>
+                        </div>
+                    </div>
+                `;
                 
-                // Calculate duration
-                if (data.loan_date) {
-                    const loanDate = moment(data.loan_date);
-                    const returnDate = data.return_date ? moment(data.return_date) : moment();
-                    const duration = returnDate.diff(loanDate, 'days') + 1;
-                    $('#detail-duration').text(duration + ' hari');
-                } else {
-                    $('#detail-duration').text('-');
-                }
-                
-                $('#detailModal').modal('show');
+                $('#detailModal .modal-body').html(modalContent);
             },
             error: function(xhr) {
+                // Check if modal still exists (user hasn't closed it)
+                if (!$('#detailModal').length) return;
+                
+                $('#detailModal .modal-body').html(`
+                    <div class="alert alert-danger">
+                        Gagal memuat detail peminjaman. Silakan coba lagi.
+                    </div>
+                `);
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal',
@@ -1167,7 +1373,6 @@ $(document).ready(function() {
             }
         });
     });
-
     // Print receipt
     if ($('#print-receipt').length) {
         $('#print-receipt').click(function() {
