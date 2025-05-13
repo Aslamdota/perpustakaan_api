@@ -1276,7 +1276,6 @@ $(document).ready(function() {
     // Show detail modal
    $(document).on('click', '.view-detail', function() {
     var loanId = $(this).data('id');
-    
         // Show the modal immediately with loading state
         $('#detailModal').modal('show');
         $('#detailModal .modal-body').html(`
