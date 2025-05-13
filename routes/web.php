@@ -10,7 +10,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\FineMasterController;
 use App\Http\Controllers\peminjaman\PeminjamanController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\BookController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -55,3 +55,6 @@ Route::post('/loans/{loan}/return', [PeminjamanController::class, 'returnBook'])
 // Fine settings routes
 Route::get('/fine-settings', [FineMasterController::class, 'getFineSettings'])->name('fine.get');
 Route::post('/fine-settings', [FineMasterController::class, 'updateFineSettings'])->name('fine.update');
+
+Route::apiResource('books', BookController::class);
+Route::apiResource('members', MemberController::class);
