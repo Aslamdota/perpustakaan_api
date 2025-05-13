@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\DueDateMaster;
 use App\Models\Member;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 class LoanController extends Controller
 {
@@ -58,6 +57,22 @@ class LoanController extends Controller
         ]);
     }
 
+    public function getLoan()
+    {
+        $borrowings = Loan::whereIn('status', ['borrowed', 'overdue'])->with(['book', 'member', 'staff'])->get();
+
+        $borrowings = $borrowings->map(function ($loan) {
+            $loan->book_title = $loan->book->title ?? null;
+            return $loan;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $borrowings
+        ]);
+    }
+
+    
     /**
      * Store a newly created resource in storage.
      */

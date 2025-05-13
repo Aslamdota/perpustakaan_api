@@ -44,7 +44,12 @@ Route::post('/addCategory', [CategoryController::class, 'addCategory'])->name('a
 Route::get('/loans/{loan}', [PeminjamanController::class, 'show'])->name('loans.show');
 
 Route::get('/returns', [PeminjamanController::class, 'returnsIndex'])->name('returns.index');
+Route::get('/returnsHistory', [PeminjamanController::class, 'returnsHistory'])->name('returns.history');
+
 Route::get('/returns/data', [PeminjamanController::class, 'getLoansForReturn'])->name('returns.data');
+Route::get('/returns/data_pending', [PeminjamanController::class, 'getLoansForReturnPending'])->name('returns.pending_data');
+Route::get('/returns/data_history', [PeminjamanController::class, 'getLoansForReturnHistory'])->name('returns.history_data');
+
 Route::post('/loans/{loan}/return', [PeminjamanController::class, 'returnBook'])->name('loans.return');
 
 // Fine settings routes

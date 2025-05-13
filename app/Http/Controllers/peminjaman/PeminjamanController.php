@@ -107,6 +107,12 @@ class PeminjamanController extends Controller
         return view('pengembalian.returns',  ['title' => 'viewPengembalian']);
     }
 
+    public function returnsHistory()
+    {
+        return view('pengembalian.history_pengembalian',  ['title' => 'viewPengembalianHistory']);
+    }
+    
+
     public function show(Loan $loan)
     {
         return response()->json([
@@ -179,4 +185,36 @@ class PeminjamanController extends Controller
             ->rawColumns(['action'])
             ->toJson();
     }
+
+    public function getLoansForReturnHistory()
+    {
+        $loans = Loan::with(['book', 'member'])
+            ->where('status', 'returned')
+            ->get();
+
+        return datatables()->of($loans)
+            ->addIndexColumn()
+            ->addColumn('action', function($loan) {
+                return '<button class="btn btn-sm btn-primary process-return" data-id="'.$loan->id.'">Proses</button>';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+    public function getLoansForReturnPending()
+    {
+        $loans = Loan::with(['book', 'member'])
+            ->where('status', 'pending')
+            ->get();
+
+        return datatables()->of($loans)
+            ->addIndexColumn()
+            ->addColumn('action', function($loan) {
+                return '<button class="btn btn-sm btn-primary process-return" data-id="'.$loan->id.'">Proses</button>';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+    
 }
