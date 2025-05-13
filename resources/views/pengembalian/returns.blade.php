@@ -407,9 +407,9 @@
                                 <h6 class="card-title text-primary"><i class="bx bx-book me-2"></i> Informasi Buku</h6>
                                 <hr>
                                 <div class="d-flex mb-3">
-                                    <div class="flex-shrink-0">
+                                  <!--   <div class="flex-shrink-0">
                                         <img id="book-cover" src="" alt="Book Cover" class="rounded" width="80" height="120" onerror="this.src='{{ asset('assets/images/no-image.jpg') }}'">
-                                    </div>
+                                    </div> -->
                                     <div class="flex-grow-1 ms-3">
                                         <h5 id="book-title" class="mb-1"></h5>
                                         <p class="mb-1"><small class="text-muted">Kode: </small><span id="book-code"></span></p>
@@ -426,9 +426,9 @@
                                 <h6 class="card-title text-primary"><i class="bx bx-user me-2"></i> Informasi Member</h6>
                                 <hr>
                                 <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0">
+                                    <!-- <div class="flex-shrink-0">
                                         <img id="member-photo" src="" alt="Member Photo" class="rounded-circle" width="60" height="60" onerror="this.src='{{ asset('assets/images/avatars/default.png') }}'">
-                                    </div>
+                                    </div> -->
                                     <div class="flex-grow-1 ms-3">
                                         <h5 id="member-name" class="mb-0"></h5>
                                         <p class="mb-0"><small class="text-muted">ID: </small><span id="member-id"></span></p>
@@ -1117,21 +1117,10 @@ $(document).ready(function() {
             },
             success: function(data) {
                 // Populate modal with data
-                var bookCover = data.book && data.book.cover_url ? data.book.cover_url : '{{ asset('assets/images/no-image.jpg') }}';
-                var memberPhoto = data.member && data.member.photo_url ? data.member.photo_url : '{{ asset('assets/images/avatars/default.png') }}';
-                
-                $('#book-cover').attr('src', bookCover).on('error', function() {
-                    $(this).attr('src', '{{ asset('assets/images/no-image.jpg') }}');
-                });
-                
                 $('#book-title').text(data.book && data.book.title ? data.book.title : '-');
                 $('#book-code').text(data.book && data.book.code ? data.book.code : '-');
                 $('#book-isbn').text(data.book && data.book.isbn ? data.book.isbn : '-');
                 $('#book-author').text(data.book && data.book.author ? data.book.author : '-');
-                
-                $('#member-photo').attr('src', memberPhoto).on('error', function() {
-                    $(this).attr('src', '{{ asset('assets/images/avatars/default.png') }}');
-                });
                 
                 $('#member-name').text(data.member && data.member.name ? data.member.name : '-');
                 $('#member-id').text(data.member && data.member.member_id ? data.member.member_id : '-');
@@ -1254,7 +1243,6 @@ function showMemberDetail(memberId) {
                         title: data.name || 'Detail Member',
                         html: `
                             <div class="text-start">
-                                ${data.avatar ? `<img src="${data.avatar}" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='{{ asset('assets/images/avatars/default.png') }}'">` : ''}
                                 <p><strong>ID Member:</strong> ${data.member_id || '-'}</p>
                                 <p><strong>Email:</strong> ${data.email || '-'}</p>
                                 <p><strong>Telepon:</strong> ${data.phone || '-'}</p>
