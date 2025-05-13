@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\DueDateMaster;
 use App\Models\Member;
-
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 class LoanController extends Controller
 {
     /**
@@ -92,7 +93,10 @@ class LoanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
-            'member_id' => 'required|exists:members,member_id',
+            'member_id' => 'required|exists:members,member_id', 
+        ], [
+            'member_id.exists' => 'The member ID is invalid or does not exist',
+            'book_id.exists' => 'The book ID is invalid or does not exist'
         ]);
 
         if ($validator->fails()) {
@@ -104,7 +108,22 @@ class LoanController extends Controller
 
         $now = Carbon::now();
 
+        $member = Member::where('member_id', $request->member_id)->first();
+        if (!$member) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Member not found'
+            ], 404);
+        }
+
         $book = Book::find($request->book_id);
+        if (!$book) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Book not found'
+            ], 404);
+        }
+
         if ($book->stock <= 0) {
             return response()->json([
                 'status' => 'error',
@@ -112,9 +131,8 @@ class LoanController extends Controller
             ], 400);
         }
 
-        // Check if member already has an active loan for this book
         $existingLoan = Loan::where('book_id', $request->book_id)
-            ->where('member_id', Member::where('member_id', $request->member_id)->first()->id)
+            ->where('member_id', $member->id)
             ->whereNotIn('status', ['returned', 'rejected'])
             ->first();
 
@@ -125,7 +143,6 @@ class LoanController extends Controller
             ], 409);
         }
 
-        // Get active due date settings
         $dueDateSetting = DueDateMaster::where('status', 'active')->first();
 
         if (!$dueDateSetting) {
@@ -135,19 +152,24 @@ class LoanController extends Controller
             ], 400);
         }
 
-        $member = Member::where('member_id', $request->member_id)->first();
         $randomStaff = User::whereIn('role', ['admin', 'karyawan'])->inRandomOrder()->first();
 
         try {
-            $loan = new Loan();
-            $loan->book_id = $request->book_id;
-            $loan->member_id = $member->id;
-            $loan->loan_date = $now; // Set loan date to current time
-            $loan->due_date = Carbon::parse($dueDateSetting->due_date); // Set due date from settings
-            $loan->jumlah = 1;
-            $loan->status = 'pending';
-            $loan->staff_id = $randomStaff ? $randomStaff->id : null;
-            $loan->save();
+            DB::beginTransaction();
+
+            $loan = Loan::create([
+                'book_id' => $request->book_id,
+                'member_id' => $member->id,
+                'loan_date' => $now,
+                'due_date' => Carbon::parse($dueDateSetting->due_date),
+                'jumlah' => 1,
+                'status' => 'pending',
+                'staff_id' => $randomStaff ? $randomStaff->id : null
+            ]);
+
+            $book->decrement('stock');
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -156,6 +178,7 @@ class LoanController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to create loan: ' . $e->getMessage()

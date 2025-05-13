@@ -312,25 +312,40 @@ $(document).ready(function() {
             { 
                 data: 'loan_date', 
                 name: 'loan_date',
-                className: 'text-center',
                 render: function(data) {
-                    return new Date(data).toLocaleDateString('id-ID');
+                    return new Date(data).toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
                 }
             },
             { 
                 data: 'due_date', 
                 name: 'due_date',
-                className: 'text-center',
                 render: function(data) {
-                    return `<span class="fw-semibold">${new Date(data).toLocaleDateString('id-ID')}</span>`;
+                    const formattedDate = new Date(data).toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                    return `<span class="fw-bold">${formattedDate}</span>`;
                 }
             },
             { 
                 data: 'return_date', 
                 name: 'return_date',
-                className: 'text-center',
                 render: function(data) {
-                    return data ? `<span class="text-success">${new Date(data).toLocaleDateString('id-ID')}</span>` : '-';
+                    if (!data) return '-';
+                    
+                    const formattedDate = new Date(data).toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                    
+                    const statusClass = data ? 'text-success' : '';
+                    return `<span class="fw-semibold ${statusClass}">${formattedDate}</span>`;
                 }
             },
             { 

@@ -120,8 +120,8 @@
                 { data: 'book_title', name: 'book.title' },
                 { data: 'member_name', name: 'member.name' },
                 { 
-                    data: 'borrow_date', 
-                    name: 'borrow_date',
+                    data: 'loan_date', 
+                    name: 'loan_date',
                     render: function(data) {
                         return new Date(data).toLocaleDateString('id-ID', { 
                             day: 'numeric', 
