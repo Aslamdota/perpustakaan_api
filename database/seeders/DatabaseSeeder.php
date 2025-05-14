@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             MemberSeeder::class,
             BookSeeder::class,
             UserSeeder::class,
+            DuedateSeeder::class,
         ]);
     }
 }

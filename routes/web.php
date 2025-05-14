@@ -24,6 +24,7 @@ Route::get('/dashboard', [LoginController::class, 'viewDashboard'])->name('dashb
 
 Route::get('/viewBuku', [BooksController::class, 'viewBooks'])->name('view.books')->middleware('auth');
 Route::post('/storeBook', [BooksController::class, 'storeBook'])->name('store.books')->middleware('auth');
+Route::get('/editBook/{id}', [BooksController::class, 'editBook'])->name('edit.books')->middleware('auth');
 
 // Route::get('/peminjaman', [LoanController::class, 'index'])->name('loans.index');
 Route::get('/viewPeminjaman', [PeminjamanController::class, 'viewPeminjaman'])->name('view.peminjaman')->middleware('auth');

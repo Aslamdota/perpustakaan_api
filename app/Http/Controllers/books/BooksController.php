@@ -48,5 +48,10 @@ class BooksController extends Controller
         return redirect()->route('view.books')->with($notification);
     }
 
+    public function editBook($id){
+        $books = Book::findorFail($id);
+        return view('buku.edit', compact('books'), ['title' => 'Edit Buku']);
+    }
+
 
 }

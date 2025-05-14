@@ -2,7 +2,7 @@
 
 @section('content')
     <h1>Daftar Buku</h1>
-    <a href="{{ route('buku.create') }}">Tambah Buku</a>
+    {{-- <a href="{{ route('buku.create') }}">Tambah Buku</a> --}}
     <table border="1">
         <thead>
             <tr>

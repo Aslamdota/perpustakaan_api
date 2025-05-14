@@ -146,8 +146,11 @@
                  <td>{{ $item->stock }}</td>
                  <td>{{ $item->description }}</td>
                  <td>{{ $item->category->name }}</td>
-                 <td><img src="assets/images/products/01.png" class="product-img-2" alt="product img"></td>
-                 <td>aksi</td>
+                 <td><img src="{{ asset('storage/' . $item->cover_image) }}" class="product-img-2" alt="product img"></td>
+                 <td>
+                    <a href="{{ route('edit.books', $item->id) }}" class="badge bg-primary confirm-btn">Edit</a>
+                    <a href="" class="badge bg-danger reject-btn">Hapus</a>
+                 </td>
                 </tr>
                 @endforeach
                 
@@ -160,8 +163,8 @@
         </div>
         
 
-            </div>
-        </div>
+     </div>
+</div>
 
 
 @endsection
