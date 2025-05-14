@@ -31,28 +31,57 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation1" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="bsValidation1" placeholder="Input name ..." required name="name">
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="text" class="form-control @error('name')
+                                    is-invalid
+                                @enderror" id="bsValidation1" placeholder="Input name ..." required name="name">
+                                @error('name')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation2" class="form-label">Member Id</label>
-                                <input type="text" class="form-control" id="bsValidation2" placeholder="Member Id" name="member_id" required>
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="text" class="form-control @error('member_id')
+                                    is-invalid
+                                @enderror" id="bsValidation2" placeholder="Member Id" name="member_id" required>
+                                @error('member_id')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation3" class="form-label">Email</label>
-                                <input type="text" class="form-control" id="bsValidation3" placeholder="email" name="email" required>
-                                <div class="invalid-feedback">Please choose a username.</div>
+                                <input type="text" class="form-control @error('email')
+                                    is-invalid
+                                @enderror" id="bsValidation3" placeholder="email" name="email" required>
+                                @error('email')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation4" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="bsValidation4" placeholder="password" name="Password" required>
-                                <div class="invalid-feedback">Please provide a valid email.</div>
+                                <input type="password" class="form-control @error('password')
+                                    is-invalid
+                                @enderror" id="bsValidation4" placeholder="password" name="Password" required>
+                                @error('password')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation4" class="form-label">Phone</label>
-                                <input type="number" class="form-control" id="bsValidation4" placeholder="number" name="phone" required>
-                                <div class="invalid-feedback">Please provide a valid email.</div>
+                                <input type="number" class="form-control @error('phone')
+                                    is-invalid
+                                @enderror" id="bsValidation4" placeholder="number" name="phone" required>
+                                @error('phone')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="bsValidation13" class="form-label">Address</label>
+                                <textarea class="form-control @error('address')
+                                    is-invalid
+                                @enderror" id="bsValidation13" placeholder="Deskripsi ..." name="address" rows="3" required></textarea>
+                                @error('address')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             
                             <div class="col-md-12">
@@ -124,8 +153,8 @@
                     <img src="{{ asset('storage/' . $item->avatar) }}" class="product-img-2" alt="product img">
                 </td>
                  <td>
-                    <a href="{{ $item->id }}" class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#formModal">Konfirm</a>
-                    <a href="{{ $item->id }}" class="badge bg-danger" data-bs-toggle="modal" data-bs-target="#formTolak">Tolak</a>
+                    <a href="{{ route('edit.member', $item->id) }}" class="badge bg-primary">Konfirm</a>
+                    <a href="{{ route('destroy.member', $item->id) }}"onclick="event.preventDefault(); confirmDelete(this);" class="badge bg-danger" onclick="">Tolak</a>
                 </td>
 
                 </tr>
@@ -147,5 +176,13 @@
             </div>
         </div>
 
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('formModal'));
+        myModal.show();
+    });
+</script>
+@endif
 
 @endsection

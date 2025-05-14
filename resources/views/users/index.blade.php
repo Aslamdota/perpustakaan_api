@@ -24,36 +24,57 @@
                                 <div class="upload-card" id="upload-card">
                                     <div id="image-preview" style="display: none;"></div>
                                     <label for="fancy-file-upload" class="upload-label">Choose Image</label>
-                                    <input id="fancy-file-upload" type="file" name="avatar" accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
+                                    <input id="fancy-file-upload" class="@error('avatar')
+                                        is-invalid
+                                    @enderror" type="file" name="avatar" accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
                                     <button id="remove-button" class="remove-button" style="display: none;" type="button" onclick="removeImage()">&times;</button>
                                 </div>
+                                @error('avatar')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation1" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="bsValidation1" placeholder="Name" required name="name">
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="text" class="form-control @error('name')
+                                    is-invalid
+                                @enderror" id="bsValidation1" placeholder="Name" required name="name">
+                                @error('name')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation2" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="bsValidation2" placeholder="Email Books" name="email" required>
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="email" class="form-control @error('email')
+                                    is-invalid
+                                @enderror" id="bsValidation2" placeholder="Email Books" name="email" required>
+                                @error('email')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label for="bsValidation2" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="bsValidation2" placeholder="Password" name="password" required>
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="password" class="form-control @error('password')
+                                    is-invalid
+                                @enderror" id="bsValidation2" placeholder="Password" name="password" required>
+                                @error('password')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             
                             
                             <div class="col-md-6">
                                 <label for="bsValidation9" class="form-label">Role</label>
-                                <select id="bsValidation9" name="role" class="form-select" required>
+                                <select id="bsValidation9" name="role" class="form-select @error('role')
+                                    is-invalid
+                                @enderror" required>
                                     <option selected disabled value="">Pilih Role</option>
                                     <option value="admin">Admin</option>
                                     <option value="karyawan">Karyawan</option>
                                 </select>
-                                <div class="invalid-feedback">Please select a valid category.</div>
+                                @error('role')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             
@@ -127,10 +148,8 @@
                                     <img src="{{ asset('storage/' . $item->avatar) }}" class="product-img-2" alt="product img">
                                 </td>
                                 <td>
-                                    <a href="{{ $item->id }}" class="badge bg-primary" data-bs-toggle="modal"
-                                        data-bs-target="#formModal">Konfirm</a>
-                                    <a href="{{ $item->id }}" class="badge bg-danger" data-bs-toggle="modal"
-                                        data-bs-target="#formTolak">Tolak</a>
+                                    <a href="{{ route('edit.user', $item->id) }}" class="badge bg-primary">Konfirm</a>
+                                    <a href="{{ route('destroy.user', $item->id) }}" class="badge bg-danger" onclick="event.preventDefault(); confirmDelete(this);">Tolak</a>
                                 </td>
 
                             </tr>
@@ -153,6 +172,15 @@
 </div>
 
 
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('formModal'));
+        myModal.show();
+    });
+</script>
+@endif
 
 
 

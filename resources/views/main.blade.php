@@ -38,6 +38,13 @@
 	<!-- Toastr CSS -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
+	{{-- data table --}}
+	<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet"/>
+	{{-- <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" /> --}}
+
+	{{-- sweetalert --}}
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" rel="stylesheet"/>
+
 	<title>{{ $title }}</title>
 
 	@stack('css')
@@ -178,7 +185,24 @@
 	<script src="{{ asset('assets/plugins/fancy-file-uploader/jquery.iframe-transport.js') }}"></script>
 	<script src="{{ asset('assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js') }}"></script>
 	<script src="{{ asset('assets/plugins/Drag-And-Drop/dist/imageuploadify.min.js') }}"></script>
-	
+
+
+	{{-- data table --}}
+	<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!-- Gunakan CDN untuk moment.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/id.min.js"></script>
+
+	<!-- Gunakan CDN untuk daterangepicker -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css">
+	<script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
+
+	{{-- datatable --}}
+	<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
 
 	<!--app JS-->
 	<script src="{{ asset('assets/js/app.js') }}"></script>
@@ -209,11 +233,31 @@
 
     </script>
 
+	{{-- SweetAlert Delete --}}
+<script>
+    function confirmDelete(element) {
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            text: "Data ini tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = element.href;
+            }
+        });
+    }
+</script>
+
 	<script>
 		new PerfectScrollbar(".app-container")
 	</script>
 
-	{{-- upload image--}}
+	{{-- upload gambar --}}
 	<script>
     function previewImage(event) {
         const file = event.target.files[0];
@@ -221,7 +265,7 @@
             const reader = new FileReader();
             reader.onload = () => {
                 const preview = document.getElementById('image-preview');
-                preview.innerHTML = `<img src="${reader.result}" alt="Preview">`;
+                preview.innerHTML = `<img src="${reader.result}" alt="Preview" class="img-fluid mb-2" style="max-height: 200px;">`;
                 preview.style.display = 'block';
                 document.getElementById('remove-button').style.display = 'inline-block';
             };
@@ -230,12 +274,14 @@
     }
 
     function removeImage() {
-        document.getElementById('image-preview').style.display = 'none';
-        document.getElementById('image-preview').innerHTML = '';
+        const preview = document.getElementById('image-preview');
+        preview.style.display = 'none';
+        preview.innerHTML = '';
         document.getElementById('fancy-file-upload').value = '';
         document.getElementById('remove-button').style.display = 'none';
     }
 </script>
+
 @stack('js')
 </body>
 

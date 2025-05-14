@@ -1,6 +1,6 @@
 @extends('main')
 @push('css')
-<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
+
 @endpush
 @section('content')
 
@@ -104,8 +104,7 @@
 @endsection
 
 @push('js')
-<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+
 <script>
     $(document).ready(function() {
         var table = $('#borrowings-table').DataTable({

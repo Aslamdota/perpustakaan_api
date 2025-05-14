@@ -60,7 +60,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getBorrowing', [LoanController::class, 'getBorrowing']);
     Route::get('/getLoan', [LoanController::class, 'getLoan']);
     Route::get('/getLoan/{id}', [LoanController::class, 'getLoanMember']);
-    // Route::get('borrowings/{id}', BorrowingController::class, 'historyLoans');
     
 
     Route::put('/returns/{loan}', [ReturnBook::class, 'returnBook']);

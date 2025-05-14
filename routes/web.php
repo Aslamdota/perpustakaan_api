@@ -25,6 +25,8 @@ Route::get('/dashboard', [LoginController::class, 'viewDashboard'])->name('dashb
 Route::get('/viewBuku', [BooksController::class, 'viewBooks'])->name('view.books')->middleware('auth');
 Route::post('/storeBook', [BooksController::class, 'storeBook'])->name('store.books')->middleware('auth');
 Route::get('/editBook/{id}', [BooksController::class, 'editBook'])->name('edit.books')->middleware('auth');
+Route::post('/updateBook/{id}', [BooksController::class, 'updateBook'])->name('update.books')->middleware('auth');
+Route::get('/destroy/{id}', [BooksController::class, 'destroyBook'])->name('destroy.book');
 
 // Route::get('/peminjaman', [LoanController::class, 'index'])->name('loans.index');
 Route::get('/viewPeminjaman', [PeminjamanController::class, 'viewPeminjaman'])->name('view.peminjaman')->middleware('auth');
@@ -33,9 +35,15 @@ Route::post('/borrowings/reject/{id}', [PeminjamanController::class, 'rejectedBo
 
 Route::get('/viewMembers', [MembersController::class, 'viewMembers'])->name('view.member')->middleware('auth');
 Route::post('/storeMembers', [MembersController::class, 'storeMember'])->name('store.member')->middleware('auth');
+Route::get('/editMember/{id}', [MembersController::class, 'editMember'])->name('edit.member');
+Route::post('/updateMember/{id}', [MembersController::class, 'updateMember'])->name('update.member');
+Route::get('/destroyMember/{id}', [MembersController::class, 'destroyMember'])->name('destroy.member');
 
 Route::get('/viewUsers', [UsersController::class, 'viewUsers'])->name('view.user')->middleware('auth');
 Route::post('/storeUsers', [UsersController::class, 'storeUsers'])->name('store.user')->middleware('auth');
+Route::get('/editUsers/{id}', [UsersController::class, 'editUsers'])->name('edit.user')->middleware('auth');
+Route::post('/updateUsers/{id}', [UsersController::class, 'updateUsers'])->name('update.user')->middleware('auth');
+Route::get('/destroyUsers/{id}', [UsersController::class, 'destroyUsers'])->name('destroy.user')->middleware('auth');
 
 Route::get('/viewCategory', [CategoryController::class, 'viewCategory'])->name('view.category')->middleware('auth');
 Route::post('/addCategory', [CategoryController::class, 'addCategory'])->name('add.category')->middleware('auth');

@@ -34,48 +34,80 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation1" class="form-label">Title</label>
-                                <input type="text" class="form-control" id="bsValidation1" placeholder="Title" required name="title">
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="text" class="form-control @error('title')
+                                    is-invalid
+                                @enderror" id="bsValidation1" placeholder="Title" required name="title">
+                                @error('title')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation2" class="form-label">Author</label>
-                                <input type="text" class="form-control" id="bsValidation2" placeholder="Author Books" name="author" required>
-                                <div class="valid-feedback">Looks good!</div>
+                                <input type="text" class="form-control @error('author')
+                                    is-invalid
+                                @enderror" id="bsValidation2" placeholder="Author Books" name="author" required>
+                                @error('author')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation3" class="form-label">Publisher</label>
-                                <input type="text" class="form-control" id="bsValidation3" placeholder="publisher" name="publisher" required>
-                                <div class="invalid-feedback">Please choose a username.</div>
+                                <input type="text" class="form-control @error('publisher')
+                                    is-invalid
+                                @enderror" id="bsValidation3" placeholder="publisher" name="publisher" required>
+                                @error('publisher')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation4" class="form-label">Isbn</label>
-                                <input type="text" class="form-control" id="bsValidation4" placeholder="isbn" name="isbn" required>
-                                <div class="invalid-feedback">Please provide a valid email.</div>
+                                <input type="text" class="form-control @error('isbn')
+                                    is-invalid
+                                @enderror" id="bsValidation4" placeholder="isbn" name="isbn" required>
+                                @error('isbn')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="year" class="form-label">Year</label>
-                                <input type="number" class="form-control" id="year" placeholder="Year" name="publication_year" required>
-                                <div class="invalid-feedback">Please provide a valid year.</div>
+                                <input type="number" class="form-control @error('publication_year')
+                                    is-invalid
+                                @enderror" id="year" placeholder="Year" name="publication_year" required>
+                               @error('publication_year')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="stock" class="form-label">Stock</label>
-                                <input type="number" class="form-control" id="stock" placeholder="stock" name="stock" required>
-                                <div class="invalid-feedback">Please provide a valid stock number.</div>
+                                <input type="number" class="form-control @error('stock')
+                                    is-invalid
+                                @enderror" id="stock" placeholder="stock" name="stock" required>
+                                @error('stock')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation9" class="form-label">Kategori</label>
-                                <select id="bsValidation9" name="category_id" class="form-select" required>
+                                <select id="bsValidation9" name="category_id" class="form-select @error('category_id')
+                                    is-invalid
+                                @enderror" required>
                                     <option selected disabled value="">Pilih Kategory</option>
                                     @foreach ($books as $item)
                                         <option value="{{ $item->category_id }}">{{ $item->category->name }}</option>
                                     @endforeach
                                 </select>
-                                <div class="invalid-feedback">Please select a valid category.</div>
+                                @error('category_id')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="bsValidation13" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="bsValidation13" placeholder="Deskripsi ..." name="description" rows="3" required></textarea>
-                                <div class="invalid-feedback">Please enter a valid description.</div>
+                                <textarea class="form-control @error('description')
+                                    is-invalid
+                                @enderror" id="bsValidation13" placeholder="Deskripsi ..." name="description" rows="3" required></textarea>
+                                @error('description')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-12">
                                 <div class="d-md-flex d-grid align-items-center gap-3">
@@ -149,7 +181,8 @@
                  <td><img src="{{ asset('storage/' . $item->cover_image) }}" class="product-img-2" alt="product img"></td>
                  <td>
                     <a href="{{ route('edit.books', $item->id) }}" class="badge bg-primary confirm-btn">Edit</a>
-                    <a href="" class="badge bg-danger reject-btn">Hapus</a>
+                    <a href="{{ route('destroy.book', $item->id) }}" onclick="confirmDelete()" class="badge bg-danger reject-btn">Hapus</a>
+
                  </td>
                 </tr>
                 @endforeach
@@ -165,6 +198,17 @@
 
      </div>
 </div>
+
+
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('formModal'));
+        myModal.show();
+    });
+</script>
+@endif
 
 
 @endsection
