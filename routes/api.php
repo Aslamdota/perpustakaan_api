@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
+    
 
     Route::middleware('auth:sanctum')->get('/loans', [LoanController::class, 'index']);
 
@@ -58,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/getBorrowing', [LoanController::class, 'getBorrowing']);
     Route::get('/getLoan', [LoanController::class, 'getLoan']);
+    Route::get('/getLoan/{id}', [LoanController::class, 'getLoanMember']);
+    // Route::get('borrowings/{id}', BorrowingController::class, 'historyLoans');
     
 
     Route::put('/returns/{loan}', [ReturnBook::class, 'returnBook']);

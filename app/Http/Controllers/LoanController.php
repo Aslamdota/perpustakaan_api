@@ -72,6 +72,21 @@ class LoanController extends Controller
         ]);
     }
 
+    public function getLoanMember($id)
+    {
+        $borrowings = Loan::findOrFail($id)->whereIn('status', ['borrowed', 'overdue'])->with(['book', 'member', 'staff'])->get();
+
+        $borrowings = $borrowings->map(function ($loan) {
+            $loan->book_title = $loan->book->title ?? null;
+            return $loan;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $borrowings
+        ]);
+    }
+
     
     /**
      * Store a newly created resource in storage.

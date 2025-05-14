@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Borrowing;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -24,6 +25,8 @@ class BorrowingController extends Controller
             'data' => $borrowings
         ]);
     }
+
+    
 
     /**
      * Store a newly created resource in storage.

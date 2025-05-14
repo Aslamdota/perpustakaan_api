@@ -4,6 +4,7 @@ namespace App\Http\Controllers\books;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 // use App\Models\Category;
 
@@ -50,7 +51,8 @@ class BooksController extends Controller
 
     public function editBook($id){
         $books = Book::findorFail($id);
-        return view('buku.edit', compact('books'), ['title' => 'Edit Buku']);
+        $categories = Category::latest()->get();
+        return view('buku.edit', compact('books', 'categories'), ['title' => 'Edit Buku']);
     }
 
 
