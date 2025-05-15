@@ -1,11 +1,6 @@
 @extends('main')
 @section('content')
 
-<style>
-    .modal-center {
-        margin-right: 20%;
-    }
-</style>
 @include('layouts.style')
 
 <!-- Modaal konfirm -->
@@ -92,40 +87,17 @@
     </div>
 </div>
 
-
 <div class="page-wrapper">
     <div class="page-content">
-
-
         <div class="card radius-10">
             <div class="card-header bg-transparent">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h6 class="mb-0"><button class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#formModal">Tambah</button>
-                        </h6>
-                    </div>
-                    <div class="dropdown ms-auto">
-                        <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
-                                class="bx bx-dots-horizontal-rounded font-22 text-option"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="javascript:;">Action</a>
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;">Another action</a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;">Something else here</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <h6 class="mb-0">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formModal">Tambah</button>
+                </h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table id="users-table" class="table align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>No</th>
@@ -133,45 +105,78 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Avatar</th>
-                                <th colspan="2">Aksi</th>
-
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($users as $key => $item)
-                            <tr>
-                                <td>{{ $key +1 }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->email }}</td>
-                                <td>{{ $item->role }}</td>
-                                <td>
-                                    <img src="{{ asset('storage/' . $item->avatar) }}" class="product-img-2" alt="product img">
-                                </td>
-                                <td>
-                                    <a href="{{ route('edit.user', $item->id) }}" class="badge bg-primary">Konfirm</a>
-                                    <a href="{{ route('destroy.user', $item->id) }}" class="badge bg-danger" onclick="event.preventDefault(); confirmDelete(this);">Tolak</a>
-                                </td>
-
-                            </tr>
-
-
-
-                            @endforeach
-
-
-
-
+                            
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('#users-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route("view.user") }}',
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { data: 'email', name: 'email' },
+                { 
+                    data: 'role', name: 'role',
+                    render: function(data) {
+                        return '<span class="badge bg-gradient-quepal text-white shadow-sm w-10">'+data+'</span>';
+                    } 
+                },
+                { data: 'avatar', name: 'avatar', orderable: false, searchable: false },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
 
+        // Handle delete button
+        $('#users-table').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data ini tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            $('#users-table').DataTable().ajax.reload();
+                            Swal.fire('Berhasil!', response.message, 'success');
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal!', 'Gagal menghapus user.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+@endpush
 
 @if ($errors->any())
 <script>
@@ -181,7 +186,5 @@
     });
 </script>
 @endif
-
-
 
 @endsection

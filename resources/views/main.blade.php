@@ -7,6 +7,7 @@
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
 	<link rel="icon" href="{{ asset('assets/images/favicon-32x32.png') }}" type="image/png"/>
@@ -166,6 +167,7 @@
 		</div>
 	</div>
 	<!--end switcher-->
+	
 
 	<!-- Bootstrap JS -->
 	<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
@@ -177,7 +179,10 @@
 	<script src="{{ asset('assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/vectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
 	<script src="{{ asset('assets/plugins/chartjs/js/chart.js') }}"></script>
+
+	<script src="{{ asset('assets/plugins/sparkline-charts/jquery.sparkline.min.js') }}"></script>
 	<script src="{{ asset('assets/js/index.js') }}"></script>
+	<script src="{{ asset('assets/js/index2.js') }}"></script>
 
 	{{-- upload image --}}
 	<script src="{{ asset('assets/plugins/fancy-file-uploader/jquery.ui.widget.js') }}"></script>

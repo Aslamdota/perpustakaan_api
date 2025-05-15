@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\auth\DashboardController;
 use App\Http\Controllers\auth\LoginController;
+use App\Http\Controllers\auth\ProfilController;
 use App\Http\Controllers\books\BooksController;
 use App\Http\Controllers\books\CategoryController;
 use App\Http\Controllers\LoanController;
@@ -20,7 +22,11 @@ Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('au
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::get('/dashboard', [LoginController::class, 'viewDashboard'])->name('dashboard.admin')->middleware('auth');
+Route::get('/dashboard', [DashboardController::class, 'viewDashboard'])->name('dashboard.admin')->middleware('auth');
+
+Route::get('/profil/{id}', [ProfilController::class, 'viewProfil'])->name('profil.admin')->middleware('auth');
+Route::post('/updateProfil/{id}', [ProfilController::class, 'updateProfil'])->name('update.admin')->middleware('auth');
+Route::post('/updatePassword/{id}', [ProfilController::class, 'updatePassword'])->name('update.password')->middleware('auth');
 
 Route::get('/viewBuku', [BooksController::class, 'viewBooks'])->name('view.books')->middleware('auth');
 Route::post('/storeBook', [BooksController::class, 'storeBook'])->name('store.books')->middleware('auth');
@@ -40,10 +46,14 @@ Route::post('/updateMember/{id}', [MembersController::class, 'updateMember'])->n
 Route::get('/destroyMember/{id}', [MembersController::class, 'destroyMember'])->name('destroy.member');
 
 Route::get('/viewUsers', [UsersController::class, 'viewUsers'])->name('view.user')->middleware('auth');
+Route::get('/users/data', [UsersController::class, 'getUsersData'])->name('users.data');
 Route::post('/storeUsers', [UsersController::class, 'storeUsers'])->name('store.user')->middleware('auth');
 Route::get('/editUsers/{id}', [UsersController::class, 'editUsers'])->name('edit.user')->middleware('auth');
 Route::post('/updateUsers/{id}', [UsersController::class, 'updateUsers'])->name('update.user')->middleware('auth');
 Route::get('/destroyUsers/{id}', [UsersController::class, 'destroyUsers'])->name('destroy.user')->middleware('auth');
+// web.php
+// Route::delete('/users/{id}', [UsersController::class, 'destroyUsers'])->name('destroy.user')->middleware('auth');
+
 
 Route::get('/viewCategory', [CategoryController::class, 'viewCategory'])->name('view.category')->middleware('auth');
 Route::post('/addCategory', [CategoryController::class, 'addCategory'])->name('add.category')->middleware('auth');

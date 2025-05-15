@@ -78,7 +78,7 @@
                                 <label for="bsValidation13" class="form-label">Address</label>
                                 <textarea class="form-control @error('address')
                                     is-invalid
-                                @enderror" id="bsValidation13" placeholder="Deskripsi ..." name="address" rows="3" required></textarea>
+                                @enderror" id="bsValidation13" placeholder="Address ..." name="address" rows="3" required></textarea>
                                 @error('address')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -128,46 +128,22 @@
                </div>
             <div class="card-body">
             <div class="table-responsive">
-              <table class="table align-middle mb-0">
-               <thead class="table-light">
-                <tr>
-                  <th>No</th>
-                  <th>Name</th>
-                  <th>Member_id</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Avatar</th>
-                  <th colspan="2">Aksi</th>
-                  
-                </tr>
-                </thead>
-                <tbody>
-                @foreach ($members as $key => $item)
-                <tr>
-                 <td>{{ $key +1 }}</td>
-                 <td>{{ $item->name }}</td>
-                 <td>{{ $item->member_id }}</td>
-                 <td>{{ $item->email }}</td>
-                 <td>{{ $item->phone }}</td>
-                 <td>
-                    <img src="{{ asset('storage/' . $item->avatar) }}" class="product-img-2" alt="product img">
-                </td>
-                 <td>
-                    <a href="{{ route('edit.member', $item->id) }}" class="badge bg-primary">Konfirm</a>
-                    <a href="{{ route('destroy.member', $item->id) }}"onclick="event.preventDefault(); confirmDelete(this);" class="badge bg-danger" onclick="">Tolak</a>
-                </td>
-
-                </tr>
-
-                
-
-                @endforeach
-
-                
-
-                
-               </tbody>
-             </table>
+               <table id="members-table" class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Member</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Avatar</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
              </div>
             </div>
         </div>
@@ -175,6 +151,67 @@
 
             </div>
         </div>
+
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('#members-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route("view.member") }}',
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { 
+                    data: 'member_id', name: 'member_id',
+                    render: function(data) {
+                        return '<span class="badge bg-gradient-quepal text-white shadow-sm w-10">'+data+'</span>';
+                    } 
+                },
+                { data: 'email', name: 'email' },
+                { data: 'phone', name: 'phone' },
+                { data: 'avatar', name: 'avatar', orderable: false, searchable: false },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
+
+        // Handle delete button
+        $('#members-table').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data ini tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            $('#members-table').DataTable().ajax.reload();
+                            Swal.fire('Berhasil!', response.message, 'success');
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal!', 'Gagal menghapus user.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+@endpush
 
 @if ($errors->any())
 <script>

@@ -7,15 +7,37 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class UsersController extends Controller
 {
-    public function viewUsers(){
-        $users = User::latest()->paginate(10);
-        return view('users.index', ['title' => 'viewUsers'], compact('users'));
+    public function viewUsers()
+    {
+        if (request()->ajax()) {
+            $users = User::latest();
+            return DataTables::of($users)
+                ->addIndexColumn()
+                ->addColumn('avatar', function ($user) {
+                    return '<img src="' . asset('storage/' . $user->avatar) . '" class="product-img-2" alt="Avatar">';
+                })
+                ->addColumn('action', function ($user) {
+                    return '
+                        <a href="' . route('edit.user', $user->id) . '" class="badge bg-primary">Edit</a>
+                        <a href="' . route('destroy.user', $user->id) . '" class="badge bg-danger delete-btn">Hapus</a>
+                    ';
+                })
+                ->rawColumns(['avatar', 'action'])
+                ->make(true);
+        }
+
+        // Jika bukan AJAX, render halaman
+        $title = 'viewUsers';
+        return view('users.index', compact('title'));
     }
 
-    public function storeUsers(Request $request){
+
+    public function storeUsers(Request $request)
+    {
         // return $request;
         $request->validate([
             'name' => 'required|string|max:255',
@@ -47,12 +69,14 @@ class UsersController extends Controller
         return redirect()->route('view.user')->with($notif);
     }
 
-    public function editUsers($id){
+    public function editUsers($id)
+    {
         $users = User::findOrFail($id);
         return view('users.edit', compact('users'), ['title' => 'Edit User']);
     }
 
-    public function updateUsers(Request $request, $id){
+    public function updateUsers(Request $request, $id)
+    {
         // return $request;
         $request->validate([
             'name' => 'required|string|max:255',
@@ -85,7 +109,8 @@ class UsersController extends Controller
         return redirect()->route('view.user')->with($notif);
     }
 
-    public function destroyUsers($id){
+    public function destroyUsers($id)
+    {
         $users = User::findOrFail($id);
 
         if ($users->avatar) {

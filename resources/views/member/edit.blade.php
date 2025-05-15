@@ -35,15 +35,20 @@
                             <div class="col-md-12">
                                 <label for="fancy-file-upload" class="form-label">Image</label>
                                 <div class="upload-card" id="upload-card">
-                                    @if($members->avatar)
-                                        <div id="image-preview">
-                                            <img src="{{ asset('storage/' . $members->avatar) }}" alt="Cover Image" class="img-fluid mb-2" style="max-height: 200px;">
+                                    <!-- Wrapper for Image Preview -->
+                                    <div id="image-preview" style="{{ $members->avatar ? '' : 'display: none;' }}">
+                                        @if($members->avatar)
+                                            <img src="{{ asset('storage/' . $members->avatar) }}" alt="Preview" class="img-fluid mb-2" style="max-height: 200px;">
                                             <button id="remove-button" class="remove-button" type="button" onclick="removeImage()">&times;</button>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- File Input -->
                                     <label for="fancy-file-upload" class="upload-label">Choose Image</label>
                                     <input id="fancy-file-upload" type="file" name="avatar" accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
-                                    <button id="remove-button" class="remove-button" style="display: none;" type="button" onclick="removeImage()">&times;</button>
+                                    
+                                    <!-- Remove Button (Hidden by Default) -->
+                                    <button id="remove-button" class="remove-button" style="{{ $members->avatar ? '' : 'display: none;' }}" type="button" onclick="removeImage()">&times;</button>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -73,7 +78,7 @@
                                 <label for="bsValidation13" class="form-label">Address</label>
                                 <textarea class="form-control @error('address')
                                     is-invalid
-                                @enderror" id="bsValidation13" placeholder="Deskripsi ..." name="address" rows="3" required>{{ $members->address }}</textarea>
+                                @enderror" id="bsValidation13" placeholder="Address ..." name="address" rows="3" required>{{ $members->address }}</textarea>
                                 @error('address')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror

@@ -34,15 +34,20 @@
                             <div class="col-md-12">
                                 <label for="fancy-file-upload" class="form-label">Image</label>
                                 <div class="upload-card" id="upload-card">
-                                    @if($books->cover_image)
-                                        <div id="image-preview">
-                                            <img src="{{ asset('storage/' . $books->cover_image) }}" alt="Cover Image" class="img-fluid mb-2" style="max-height: 200px;">
+                                    <!-- Wrapper for Image Preview -->
+                                    <div id="image-preview" style="{{ $books->cover_image ? '' : 'display: none;' }}">
+                                        @if($books->cover_image)
+                                            <img src="{{ asset('storage/' . $books->cover_image) }}" alt="Preview" class="img-fluid mb-2" style="max-height: 200px;">
                                             <button id="remove-button" class="remove-button" type="button" onclick="removeImage()">&times;</button>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- File Input -->
                                     <label for="fancy-file-upload" class="upload-label">Choose Image</label>
                                     <input id="fancy-file-upload" type="file" name="cover_image" accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
-                                    <button id="remove-button" class="remove-button" style="display: none;" type="button" onclick="removeImage()">&times;</button>
+                                    
+                                    <!-- Remove Button (Hidden by Default) -->
+                                    <button id="remove-button" class="remove-button" style="{{ $books->cover_image ? '' : 'display: none;' }}" type="button" onclick="removeImage()">&times;</button>
                                 </div>
                             </div>
                             <div class="col-md-6">

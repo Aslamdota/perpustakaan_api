@@ -8,12 +8,32 @@ use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class MembersController extends Controller
 {
-    public function viewMembers(){
-        $members = Member::latest()->get();
-        return view('member.index', ['title' => 'viewMembers'], compact('members'));
+    public function viewMembers()
+    {
+        if (request()->ajax()) {
+            $members = Member::latest();
+            return DataTables::of($members)
+                ->addIndexColumn()
+                ->addColumn('avatar', function ($member) {
+                    return '<img src="' . asset('storage/' . $member->avatar) . '" class="product-img-2" alt="Avatar">';
+                })
+                ->addColumn('action', function ($member) {
+                    return '
+                        <a href="' . route('edit.member', $member->id) . '" class="badge bg-primary">Edit</a>
+                        <a href="' . route('destroy.member', $member->id) . '" class="badge bg-danger delete-btn">Hapus</a>
+                    ';
+                })
+                ->rawColumns(['avatar', 'action'])
+                ->make(true);
+        }
+
+        // Jika bukan AJAX, render halaman
+        $title = 'viewMember';
+        return view('member.index', compact('title'));
     }
 
     public function storeMember(Request $request){

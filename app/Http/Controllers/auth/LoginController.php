@@ -49,7 +49,5 @@ class LoginController extends Controller
         return redirect('/')->with('success', 'Berhasil logout');
     }
 
-    public function viewDashboard(){
-        return view('dashboard.admin', ['title' => 'Dashboard Page']);
-    }
+    
 }

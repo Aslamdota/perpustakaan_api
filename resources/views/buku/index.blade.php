@@ -92,8 +92,8 @@
                                     is-invalid
                                 @enderror" required>
                                     <option selected disabled value="">Pilih Kategory</option>
-                                    @foreach ($books as $item)
-                                        <option value="{{ $item->category_id }}">{{ $item->category->name }}</option>
+                                    @foreach ($categories as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('category_id')
@@ -150,7 +150,7 @@
                </div>
             <div class="card-body">
             <div class="table-responsive">
-              <table class="table align-middle mb-0">
+              <table id="books-table" class="table align-middle mb-0">
                <thead class="table-light">
                 <tr>
                   <th>No</th>
@@ -167,28 +167,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach ($books as $key => $item)    
-                <tr>
-                 <td>{{ $key +1 }}</td>
-                 <td>{{ $item->title }}</td>
-                 <td>{{ $item->author }}</td>
-                 <td>{{ $item->publisher }}</td>
-                 <td>{{ $item->isbn }}</td>
-                 <td>{{ $item->publication_year }}</td>
-                 <td>{{ $item->stock }}</td>
-                 <td>{{ $item->description }}</td>
-                 <td>{{ $item->category->name }}</td>
-                 <td><img src="{{ asset('storage/' . $item->cover_image) }}" class="product-img-2" alt="product img"></td>
-                 <td>
-                    <a href="{{ route('edit.books', $item->id) }}" class="badge bg-primary confirm-btn">Edit</a>
-                    <a href="{{ route('destroy.book', $item->id) }}" onclick="confirmDelete()" class="badge bg-danger reject-btn">Hapus</a>
 
-                 </td>
-                </tr>
-                @endforeach
-                
-
-                
                </tbody>
              </table>
              </div>
@@ -199,6 +178,83 @@
      </div>
 </div>
 
+
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('#books-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route("view.books") }}',
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'title', name: 'title' },
+                { data: 'author', name: 'author' },
+                { data: 'publisher', name: 'publisher' },
+                { 
+                    data: 'isbn', name: 'isbn',
+                    render: function(data) {
+                        return '<span class="badge bg-gradient-quepal text-white shadow-sm w-10">'+data+'</span>';
+                    } 
+                },
+                { data: 'publication_year', name: 'publication_year' },
+                { 
+                    data: 'stock', 
+                    name: 'stock',
+                    render: function(data) {
+                        return '<span class="badge bg-gradient-bloody text-white shadow-sm w-10">'+data+'</span>';
+                    } 
+                },
+                { data: 'description', name: 'description' },
+                { 
+                    data: 'category', 
+                    name: 'category', orderable: false, searchable: false,
+                    render: function(data) {
+                        return '<span class="badge bg-gradient-blooker text-white shadow-sm w-10">'+data+'</span>';
+                    } 
+                },
+                { data: 'cover_image', name: 'cover_image', orderable: false, searchable: false },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
+
+        // Handle delete button
+        $('#books-table').on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data ini tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            $('#books-table').DataTable().ajax.reload();
+                            Swal.fire('Berhasil!', response.message, 'success');
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal!', 'Gagal menghapus user.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+@endpush
 
 
 @if ($errors->any())

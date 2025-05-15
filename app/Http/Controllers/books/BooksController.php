@@ -7,15 +7,39 @@ use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
+
 // use App\Models\Category;
 
 class BooksController extends Controller
 {
     
-    public function viewBooks(){
-        $books = Book::with('category')->get();
+    public function viewBooks()
+    {
+        if (request()->ajax()) {
+            $books = Book::with('category')->get();
+            return DataTables::of($books)
+                ->addIndexColumn()
+                ->addColumn('category', function($book){
+                    return $book->category->name;
+                })
+                ->addColumn('cover_image', function ($book) {
+                    return '<img src="' . asset('storage/' . $book->cover_image) . '" class="product-img-2" alt="Avatar">';
+                })
+                ->addColumn('action', function ($book) {
+                    return '
+                        <a href="' . route('edit.books', $book->id) . '" class="badge bg-primary">Edit</a>
+                        <a href="' . route('destroy.book', $book->id) . '" class="badge bg-danger delete-btn">Hapus</a>
+                    ';
+                })
+                ->rawColumns(['cover_image', 'action'])
+                ->make(true);
+        }
+
+        // Jika bukan AJAX, render halaman
+        $title = 'viewBook';
         $categories = Category::latest()->get();
-        return view('buku.index', ['title' => 'Buku Page'], compact('books', 'categories'));
+        return view('buku.index', compact('title', 'categories'));
     }
 
     public function storeBook(Request $request){
@@ -69,7 +93,7 @@ class BooksController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
-            'isbn' => 'required|string|unique:books',
+            // 'isbn' => 'required|string|unique:books',
             'publication_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'stock' => 'required|integer|min:0',
             'description' => 'string',
@@ -88,8 +112,8 @@ class BooksController extends Controller
 
         if ($request->hasFile('cover_image')) {
 
-            if ($book->cover_image && Storage::disk('public/' .$book->cover_image)) {
-                Storage::delete('public/' .$book->cover_image);
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
             }
 
             $file = $request->file('cover_image')->store('books', 'public');
@@ -110,8 +134,8 @@ class BooksController extends Controller
         $book = Book::findOrFail($id);
 
          // Hapus gambar jika ada
-        if ($book->cover_image && Storage::exists('public/' . $book->cover_image)) {
-            Storage::delete('public/' . $book->cover_image);
+        if ($book->cover_image) {
+            Storage::disk('public')->delete($book->cover_image);
         }
 
         // Hapus data buku dari database
