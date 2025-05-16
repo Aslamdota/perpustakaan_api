@@ -87,7 +87,7 @@ class LoanController extends Controller
         ]);
     }
 
-    
+
     /**
      * Store a newly created resource in storage.
      */
@@ -124,7 +124,7 @@ class LoanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
-            'member_id' => 'required|exists:members,member_id', 
+            'member_id' => 'required|exists:members,member_id',
         ], [
             'member_id.exists' => 'The member ID is invalid or does not exist',
             'book_id.exists' => 'The book ID is invalid or does not exist'
@@ -284,4 +284,25 @@ class LoanController extends Controller
             'data' => $loan->load(['book', 'member', 'staff'])
         ], 200);
     }
+
+    public function getReturnedLoans()
+    {
+        $loans = Loan::where('status', 'returned')->with(['book'])->get();
+
+        $loans = $loans->map(function ($loan) {
+            return [
+                'id' => $loan->id,
+                'book_title' => $loan->book->title ?? 'Tanpa Judul',
+                'loan_date' => $loan->loan_date,
+                'updated_at' => $loan->updated_at,
+                'status' => $loan->status,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $loans
+        ]);
+    }
+
 }

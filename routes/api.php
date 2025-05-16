@@ -49,18 +49,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Borrowing routes
     Route::apiResource('borrowings', BorrowingController::class);
-    
+
 
     Route::middleware('auth:sanctum')->get('/loans', [LoanController::class, 'index']);
 
     Route::post('/loansBook', [LoanController::class, 'loanBook']);
     Route::post('/loans/{id}', [LoanController::class, 'approveBorrowing']);
     Route::post('/loans/rejected/{id}', [LoanController::class, 'rejectedBorrowing']);
+    Route::get('/getReturned', [LoanController::class, 'getReturnedLoans']);
+
 
     Route::get('/getBorrowing', [LoanController::class, 'getBorrowing']);
     Route::get('/getLoan', [LoanController::class, 'getLoan']);
     Route::get('/getLoan/{id}', [LoanController::class, 'getLoanMember']);
-    
+
 
     Route::put('/returns/{loan}', [ReturnBook::class, 'returnBook']);
     Route::get('/borrowings/overdue', [BorrowingController::class, 'getOverdue']);
