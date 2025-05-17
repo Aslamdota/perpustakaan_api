@@ -1,6 +1,7 @@
 @extends('main')
 @push('css')
-
+<link rel="stylesheet" href="{{ asset('assets/custom/css/daterangepicker.css') }}">
+<link href="{{ asset('assets/custom/css/sweetalert2.min.css') }}" rel="stylesheet"/>
 @endpush
 @section('content')
 
@@ -104,7 +105,16 @@
 @endsection
 
 @push('js')
+<script src="{{ asset('assets/custom/js/sweetalert2.min.js') }}"></script>
 
+<!-- Gunakan CDN untuk moment.js -->
+<script src="{{ asset('assets/custom/js/moment.min.js') }}"></script>
+
+<!-- Gunakan CDN untuk daterangepicker -->
+<script src="{{ asset('assets/custom/js/daterangepicker.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	
 <script>
     $(document).ready(function() {
         var table = $('#borrowings-table').DataTable({

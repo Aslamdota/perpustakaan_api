@@ -37,14 +37,11 @@
 	<link rel="stylesheet" href="{{ asset('assets/css/header-colors.css') }}"/>
 
 	<!-- Toastr CSS -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+	<link href="{{ asset('assets/custom/css/toastr.min.css') }}" rel="stylesheet">
 
 	{{-- data table --}}
 	<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet"/>
 	{{-- <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" /> --}}
-
-	{{-- sweetalert --}}
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" rel="stylesheet"/>
 
 	<title>{{ $title }}</title>
 
@@ -195,24 +192,13 @@
 	{{-- data table --}}
 	<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-	<!-- Gunakan CDN untuk moment.js -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/id.min.js"></script>
-
-	<!-- Gunakan CDN untuk daterangepicker -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css">
-	<script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
 
 	{{-- datatable --}}
-	<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
-
+	<script src="{{ asset('assets/custom/js/id.js') }}"></script>
 	<!--app JS-->
 	<script src="{{ asset('assets/js/app.js') }}"></script>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+	<script src="{{ asset('assets/custom/js/toastr.min.js') }}"></script>
 	<script>
         @if(Session::has('message'))
 			var type = "{{ Session::get('alert-type', 'info') }}";
