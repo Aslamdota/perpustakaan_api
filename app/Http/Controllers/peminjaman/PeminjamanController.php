@@ -226,7 +226,7 @@ class PeminjamanController extends Controller
             $query->where(function($q) use ($search) {
                 $q->whereHas('book', function($q) use ($search) {
                     $q->where('title', 'like', '%'.$search.'%')
-                      ->orWhere('code', 'like', '%'.$search.'%');
+                      ->orWhere('isbn', 'like', '%'.$search.'%');
                 })
                 ->orWhereHas('member', function($q) use ($search) {
                     $q->where('name', 'like', '%'.$search.'%')
