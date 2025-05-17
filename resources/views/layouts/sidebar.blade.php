@@ -49,8 +49,6 @@
             <ul>
                 <li> <a href="{{ route('view.books') }}"><i class='bx bx-table'></i>Tabel Buku</a>
                 </li>
-                <li> <a href="ecommerce-products-details.html"><i class='bx bx-edit'></i>Edit Buku</a>
-                </li>
             </ul>
         </li>
 
@@ -63,8 +61,7 @@
             <ul>
                 <li> <a href="{{ route('view.member') }}"><i class='bx bx-table'></i>Tabel Member</a>
                 </li>
-                <li> <a href="ecommerce-products-details.html"><i class='bx bx-edit'></i>Edit Member</a>
-                </li>
+
             </ul>
         </li>
 
@@ -77,8 +74,7 @@
             <ul>
                 <li> <a href="{{ route('view.user') }}"><i class='bx bx-table'></i>Tabel User</a>
                 </li>
-                <li> <a href="ecommerce-products-details.html"><i class='bx bx-edit'></i>Edit User</a>
-                </li>
+
             </ul>
         </li>
 
@@ -90,8 +86,6 @@
             </a>
             <ul>
                 <li> <a href="{{ route('view.category') }}"><i class='bx bx-table'></i>Tabel Category</a>
-                </li>
-                <li> <a href="ecommerce-products-details.html"><i class='bx bx-edit'></i>Edit Category</a>
                 </li>
             </ul>
         </li>
