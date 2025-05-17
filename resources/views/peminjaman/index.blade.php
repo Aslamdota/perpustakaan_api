@@ -2,6 +2,10 @@
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/custom/css/daterangepicker.css') }}">
 <link href="{{ asset('assets/custom/css/sweetalert2.min.css') }}" rel="stylesheet"/>
+{{-- data table --}}
+<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet"/>
+{{-- <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" /> --}}
+
 @endpush
 @section('content')
 

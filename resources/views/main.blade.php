@@ -38,11 +38,6 @@
 
 	<!-- Toastr CSS -->
 	<link href="{{ asset('assets/custom/css/toastr.min.css') }}" rel="stylesheet">
-
-	{{-- data table --}}
-	<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet"/>
-	{{-- <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" /> --}}
-
 	<title>{{ $title }}</title>
 
 	@stack('css')
