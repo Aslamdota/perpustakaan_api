@@ -1,4 +1,12 @@
 @extends('main')
+
+@push('css')
+<link href="{{ asset('assets/custom/css/sweetalert2.min.css') }}" rel="stylesheet" />
+{{-- data table --}}
+<link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
+{{-- <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" /> --}}
+
+@endpush
 @section('content')
 
 <style>
@@ -180,6 +188,9 @@
 
 
 @push('js')
+<script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	
 <script>
     $(document).ready(function() {
         $('#books-table').DataTable({

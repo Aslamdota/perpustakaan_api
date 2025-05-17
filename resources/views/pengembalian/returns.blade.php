@@ -145,7 +145,7 @@
     </div>
 </div>
 
-@include('modal')
+@include('pengembalian.modal')
 
 @endsection
 @push('js')
